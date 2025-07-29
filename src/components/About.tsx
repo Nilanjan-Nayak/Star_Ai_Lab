@@ -25,10 +25,10 @@ const About = () => {
   ];
 
   const stats = [
-    { number: "5+", label: "Years Experience" },
-    { number: "100+", label: "AI Models Trained" },
-    { number: "25+", label: "Industry Partners" },
-    { number: "10M+", label: "Data Points Processed" }
+    { number: "1+", label: "Years Experience" },
+    { number: "1+", label: "AI Models Trained" },
+    { number: "0+", label: "Industry Partners" },
+    { number: "2+", label: "Data Points Processed" }
   ];
 
   return (

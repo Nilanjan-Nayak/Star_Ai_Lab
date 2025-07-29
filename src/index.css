@@ -26,8 +26,8 @@
     --ice-blue: #93c5fd;
     
     /* Premium Gradients */
-    --gradient-void: linear-gradient(135deg, #000000 0%, #0f1419 25%, #1e3a8a 50%, #0066ff 75%, #00d4ff 100%);
-    --gradient-deep: linear-gradient(180deg, #0a0a0a 0%, #111111 20%, #1e3a8a 60%, #0066ff 100%);
+    --gradient-void: linear-gradient(135deg, #000000 0%, #0f1419 25%, #010a14 50%);
+    --gradient-deep: linear-gradient(180deg, #0a0a0a 0%, #111111 20%, #1e3a8a 60%, #0066ff 100%,);
     --gradient-royal: linear-gradient(45deg, #0066ff 0%, #00d4ff 50%, #06b6d4 100%);
     --gradient-electric: linear-gradient(90deg, #00d4ff 0%, #0066ff 50%, #1e3a8a 100%);
     --gradient-radial: radial-gradient(circle at center, #0066ff 0%, #1e3a8a 50%, #0a0a0a 100%);
@@ -42,8 +42,8 @@
     /* Borders & Shadows */
     --border-blue: rgba(59, 130, 246, 0.3);
     --border-electric: rgba(0, 212, 255, 0.4);
-    --shadow-void: 0 25px 50px rgba(0, 0, 0, 0.8);
-    --shadow-blue: 0 20px 40px rgba(0, 102, 255, 0.3);
+    --shadow-void: 0 20px 40px rgba(0, 102, 255, 0.453);
+    --shadow-blue: 0 20px 40px rgba(0, 102, 255, 0.37);
     --shadow-electric: 0 15px 30px rgba(0, 212, 255, 0.4);
 }
 
