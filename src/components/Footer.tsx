@@ -1,4 +1,4 @@
-import { Cpu, Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from 'lucide-react';
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -36,7 +36,7 @@ const Footer = () => {
   const socialLinks = [
     {
       icon: <Github className="h-5 w-5" />,
-      href: 'https://github.com',
+      href: 'https://github.com/Nilanjan-Nayak',
       name: 'GitHub',
       hover: 'hover:text-gray-300 hover:bg-gray-800/50'
     },
@@ -71,32 +71,7 @@ const Footer = () => {
       {/* Main Footer Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Company Info */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-xl shadow-lg">
-                <Cpu className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-premium-gradient">Star AI Labs</span>
-            </div>
-            <p className="text-blue-200/90 leading-relaxed mb-6">
-              Pioneering the future of artificial intelligence through innovative solutions that transform industries and enhance human potential. We're dedicated to making AI accessible and impactful for businesses worldwide.
-            </p>
-            <div className="flex space-x-4">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`p-3 bg-premium-glass backdrop-blur-lg border border-premium-blue rounded-lg transition-all duration-300 ${social.hover} hover:scale-110 shadow-lg`}
-                  title={social.name}
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
-          </div>
+          
 
           {/* Company Links */}
           <div>

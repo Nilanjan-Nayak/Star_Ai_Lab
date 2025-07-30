@@ -92,7 +92,7 @@ const About = () => {
                   {value.icon}
                 </div>
                 <h4 className="text-xl font-semibold text-white mb-3">{value.title}</h4>
-                <p className="text-blue-200/80 leading-relaxed">{value.description}</p>
+                
               </div>
             ))}
           </div>

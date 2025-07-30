@@ -26,8 +26,8 @@
     --ice-blue: #93c5fd;
     
     /* Premium Gradients */
-    --gradient-void: linear-gradient(135deg, #000000 0%, #0f1419 25%, #010a14 50%);
-    --gradient-deep: linear-gradient(180deg, #0a0a0a 0%, #111111 20%, #1e3a8a 60%, #0066ff 100%,);
+    --gradient-void: linear-gradient(135deg, #010111 0%, #010218 25%, #040a1fe9 50%);
+    --gradient-deep: linear-gradient(180deg, #0a0a0a 0%, #111111 20%,#111111 60%, #0066ff 100%,);
     --gradient-royal: linear-gradient(45deg, #0066ff 0%, #00d4ff 50%, #06b6d4 100%);
     --gradient-electric: linear-gradient(90deg, #00d4ff 0%, #0066ff 50%, #1e3a8a 100%);
     --gradient-radial: radial-gradient(circle at center, #0066ff 0%, #1e3a8a 50%, #0a0a0a 100%);

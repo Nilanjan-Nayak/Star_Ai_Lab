@@ -24,8 +24,8 @@ function App() {
                   <Navbar />
                   <Hero />
                   <About />
-                  <WatchDemo />
-                  <Projects />
+                  <WatchDemo/>
+                  <Projects/>
                   <Contact />
                   <Footer />
                 </>

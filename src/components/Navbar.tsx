@@ -29,10 +29,10 @@ const Navbar = () => {
             <img
               src="/src/img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png"
               alt="Star AI Labs Logo"
-              className="h-10 w-10 object-contain rounded-full border-2 border-blue-500/40 bg-white/10 transition-all duration-300 group-hover:border-cyan-400/60 group-hover:scale-105"
+              className="h-10 w-10 object-contain rounded-full border-2 border-blue-500/40 bg-white/10 transition-all duration-300 "
             />
             <div className="flex flex-col">
-              <span className="text-white font-bold text-lg leading-tight group-hover:text-cyan-300 transition-colors duration-300">
+              <span className="text-white font-bold text-lg leading-tight  transition-colors duration-300">
                 Star AI Lab
               </span>
               <span className="text-cyan-400 text-xs font-medium leading-tight">

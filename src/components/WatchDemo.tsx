@@ -3,7 +3,7 @@ import {  Star, Zap } from 'lucide-react';
 
 const WatchDemo = () => {
   return (
-    <section id="demo" className="py-24 relative overflow-hidden" style={{ background: 'var(--void-black)' }}>
+    <section id="demo" className="py-24 relative overflow-hidden" style={{ background: '' }}>
       {/* Premium Black Background with Professional Layers */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-slate-950 to-gray-950"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-blue-950/30 via-transparent to-slate-900/40"></div>

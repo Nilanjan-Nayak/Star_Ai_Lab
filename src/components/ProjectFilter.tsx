@@ -94,14 +94,14 @@ const ProjectFilter: React.FC<ProjectFilterProps> = ({
     <div className="mb-16" role="region" aria-label="Project category filter">
       {/* Filter Header */}
       <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center text-gray-700 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200">
-          <Filter className="h-5 w-5 mr-2 text-blue-600" />
-          <span className="font-semibold">Filter by Category</span>
+        <div className="flex items-center text-blue-300 bg-gradient-to-r from-black/90 via-slate-900/80 to-black/90 px-6 py-3 rounded-full shadow-[0_8px_16px_rgba(0,0,0,0.6),0_4px_8px_rgba(59,130,246,0.2)] border border-blue-500/40 backdrop-blur-lg">
+          <Filter className="h-5 w-5 mr-2 text-cyan-400" />
+          <span className="font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Filter by Category</span>
         </div>
       </div>
       
       {/* Category Buttons */}
-      <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+      <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
         {categories.map((category) => {
           const { total, featured } = getCategoryCount(category);
           const isActive = selectedCategory === category;
@@ -112,29 +112,29 @@ const ProjectFilter: React.FC<ProjectFilterProps> = ({
               key={category}
               onClick={() => onCategoryChange(category)}
               className={`
-                group relative inline-flex items-center px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                group relative inline-flex items-center px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 backdrop-blur-xl
                 ${isActive
-                  ? `bg-gradient-to-r ${gradient} text-white shadow-lg shadow-blue-500/25`
-                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 shadow-sm hover:shadow-md'
+                  ? `bg-gradient-to-r ${gradient} text-white shadow-[0_16px_32px_rgba(0,0,0,0.6),0_8px_16px_rgba(59,130,246,0.4),0_4px_8px_rgba(6,182,212,0.3)] border-2 border-white/20`
+                  : 'bg-gradient-to-br from-slate-900/80 via-blue-950/60 to-slate-800/80 text-blue-200 border-2 border-blue-500/30 hover:border-blue-400/50 hover:text-white shadow-[0_8px_16px_rgba(0,0,0,0.6),0_4px_8px_rgba(30,58,138,0.2)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.7),0_6px_12px_rgba(59,130,246,0.3)]'
                 }
               `}
               aria-pressed={isActive}
               aria-label={`Filter projects by ${category}. ${total} projects available${featured > 0 ? `, ${featured} featured` : ''}`}
             >
               {/* Category Icon */}
-              <span className="text-lg mr-2" role="img" aria-hidden="true">
+              <span className="text-xl mr-3" role="img" aria-hidden="true">
                 {getCategoryIcon(category)}
               </span>
               
               {/* Category Name */}
-              <span>{category}</span>
+              <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">{category}</span>
               
               {/* Count Badge */}
               <span className={`
-                ml-3 px-2.5 py-1 rounded-full text-xs font-bold transition-all duration-300
+                ml-4 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.3)]
                 ${isActive
-                  ? 'bg-white/20 text-white'
-                  : 'bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-700'
+                  ? 'bg-white/25 text-white border border-white/30'
+                  : 'bg-slate-800/60 text-slate-200 border border-slate-600/40 group-hover:bg-blue-600/30 group-hover:text-blue-100 group-hover:border-blue-400/50'
                 }
               `}>
                 {total}
@@ -143,17 +143,15 @@ const ProjectFilter: React.FC<ProjectFilterProps> = ({
               {/* Featured Indicator */}
               {featured > 0 && (
                 <div className={`
-                  ml-1 flex items-center
-                  ${isActive ? 'text-yellow-200' : 'text-yellow-500'}
+                  ml-2 flex items-center px-2 py-1 rounded-lg backdrop-blur-sm
+                  ${isActive 
+                    ? 'text-yellow-200 bg-yellow-400/20 border border-yellow-300/30' 
+                    : 'text-yellow-400 bg-yellow-500/10 border border-yellow-400/20'
+                  }
                 `}>
                   <Sparkles className="h-3 w-3" />
-                  <span className="text-xs font-medium ml-0.5">{featured}</span>
+                  <span className="text-xs font-semibold ml-1">{featured}</span>
                 </div>
-              )}
-              
-              {/* Hover Glow Effect */}
-              {!isActive && (
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/10 group-hover:to-purple-400/10 transition-all duration-300 pointer-events-none"></div>
               )}
             </button>
           );
@@ -163,11 +161,11 @@ const ProjectFilter: React.FC<ProjectFilterProps> = ({
       {/* Active Filter Summary */}
       {selectedCategory !== 'All' && (
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-semibold text-blue-600">{getCategoryCount(selectedCategory).total}</span> projects in{' '}
-            <span className="font-semibold">{selectedCategory}</span>
+          <p className="text-sm text-blue-200/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+            Showing <span className="font-semibold text-blue-300">{getCategoryCount(selectedCategory).total}</span> projects in{' '}
+            <span className="font-semibold text-white">{selectedCategory}</span>
             {getCategoryCount(selectedCategory).featured > 0 && (
-              <span className="text-yellow-600">
+              <span className="text-yellow-400">
                 {' '}• {getCategoryCount(selectedCategory).featured} featured
               </span>
             )}
