@@ -1,3 +1,4 @@
+<img width="1906" height="1079" alt="Screenshot 2025-07-29 004835" src="https://github.com/user-attachments/assets/4385f60f-95ad-4269-8464-20aaf7204f4c" />
 # Star_Ai_Lab
 ✨ AI portfolio platform with animated starfield UI, glassmorphism design &amp; full-stack management | React/TypeScript/Node/MongoDB
 # Star AI Lab - Next-Generation AI Solutions Platform
