@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const projectRoutes = require('./routes/projects');
 const authRoutes = require('./routes/auth');
+const contactRoutes = require('./routes/contact');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,7 +15,11 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'http://localhost:5000',
+    'http://localhost:3000'
+  ],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -23,17 +28,22 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/star-ai-labs', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+// MongoDB Connection (Optional - only needed for projects and auth features)
+if (process.env.MONGODB_URI || process.env.ENABLE_MONGODB === 'true') {
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/star-ai-labs')
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+    console.log('⚠️  MongoDB is not available. Contact form will still work, but projects and auth features will be disabled.');
+  });
+} else {
+  console.log('ℹ️  MongoDB is disabled. Contact form will work, but projects and auth features are disabled.');
+}
 
 // Routes
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

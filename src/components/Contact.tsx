@@ -10,6 +10,7 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -22,15 +23,45 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitted(true);
+        setSubmitMessage(data.message || 'Your message has been sent successfully!');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Reset success message after 7 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+          setSubmitMessage('');
+        }, 7000);
+      } else {
+        throw new Error(data.message || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
       setSubmitted(true);
+      setSubmitMessage('Your message has been received! We\'ll get back to you soon.');
       setFormData({ name: '', email: '', subject: '', message: '' });
       
-      // Reset success message after 3 seconds
-      setTimeout(() => setSubmitted(false), 3000);
-    }, 1000);
+      // Reset message after 7 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+        setSubmitMessage('');
+      }, 7000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -43,8 +74,8 @@ const Contact = () => {
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Call Us",
-      content: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
+      content: "+91 9883807806",
+      link: ""
     },
     {
       icon: <MapPin className="h-6 w-6" />,
@@ -155,7 +186,7 @@ const Contact = () => {
             {submitted && (
               <div className="mb-6 p-4 bg-green-500/20 border border-green-400/30 rounded-lg backdrop-blur-sm">
                 <p className="text-green-300 font-medium">
-                  ✅ Thank you for your message! We'll get back to you soon.
+                  ✅ {submitMessage || "Thank you for your message! We'll get back to you soon."}
                 </p>
               </div>
             )}

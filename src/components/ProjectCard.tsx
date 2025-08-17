@@ -104,7 +104,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       
 
       {/* Project Image with Overlay */}
-      <div className="relative h-64 bg-gradient-to-br from-slate-800 via-blue-900 to-slate-700 overflow-hidden rounded-t-3xl" role="img" aria-label={`${title} project preview`}>
+      <div className="relative h-40 bg-gradient-to-br from-slate-800 via-blue-900 to-slate-700 overflow-hidden rounded-t-3xl" role="img" aria-label={`${title} project preview`}>
         {imageUrl ? (
           <>
             <img
@@ -167,7 +167,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       </div>
 
       {/* Project Content */}
-      <div className="p-6" role="main">
+      <div className="p-4" role="main">
         {/* Header with Category and Status */}
         <div className="flex items-center justify-between mb-4" role="group" aria-label="Project metadata">
           <span 

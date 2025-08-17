@@ -142,7 +142,7 @@ const Footer = () => {
             <div className="flex items-center text-blue-200/80 mb-4 md:mb-0">
               <span>© 2024 Star AI Labs. Made with</span>
               <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
-              <span>and cutting-edge AI</span>
+              <span> Nilanjan</span>
             </div>
             
             <div className="flex items-center space-x-6">

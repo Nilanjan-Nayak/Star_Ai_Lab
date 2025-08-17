@@ -174,8 +174,8 @@ const Hero = () => {
     "",
     "// Real-time predictions",
     "const results = await model.predict({",
-    "  accuracy: 99.7,",
-    "  confidence: 0.95",
+    "  accuracy: I will try my best,",
+    "  confidence: 100.95",
     "});"
   ];
 
@@ -553,9 +553,9 @@ const Hero = () => {
                   </div>
 
                   {/* Floating AI Metrics */}
-                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-400 text-white p-3 rounded-lg shadow-lg shadow-green-500/25 animate-bounce" style={{animationDuration: '3s'}}>
-                    <div className="text-sm font-semibold">99.7%</div>
-                    <div className="text-xs opacity-90">Accuracy</div>
+                  <div className="absolute -top-8 -right-5 bg-gradient-to-r from-green-500 to-emerald-400 text-white p-3 rounded-lg shadow-lg shadow-green-500/25 animate-bounce" style={{animationDuration: '3s'}}>
+                    <div className="text-sm font-semibold">19.7%</div>
+                    <div className="text-xs opacity-90">Learning mode</div>
                   </div>
                   
                   <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white p-3 rounded-lg shadow-lg shadow-blue-500/25 animate-bounce" style={{animationDuration: '3s', animationDelay: '1s'}}>
@@ -564,7 +564,10 @@ const Hero = () => {
                   </div>
 
                   <div className="absolute top-1/2 -left-6 bg-gradient-to-r from-purple-500 to-pink-400 text-white p-2 rounded-lg shadow-lg shadow-purple-500/25 animate-bounce" style={{animationDuration: '3s', animationDelay: '2s'}}>
-                    <div className="text-xs font-semibold">AI</div>
+                    <div className="text-xs font-semibold">AI </div>
+                  </div>
+                  <div className="absolute top-4 -left-4 bg-gradient-to-r from-purple-500 to-pink-400 text-white p-2 rounded-lg shadow-lg shadow-purple-500/25 animate-bounce" style={{animationDuration: '3s', animationDelay: '2s'}}>
+                    <div className="text-xs font-semibold">App</div>
                   </div>
                 </div>
               </div>
