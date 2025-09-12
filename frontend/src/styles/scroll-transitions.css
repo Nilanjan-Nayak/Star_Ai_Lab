@@ -1,0 +1,456 @@
+/* Enhanced Scroll Transition Styles for Smart Navbar */
+
+:root {
+  /* Smart Navbar Variables */
+  --navbar-hero-bg: transparent;
+  --navbar-scrolled-bg: rgba(15, 23, 42, 0.95);
+  --navbar-activated-bg: rgba(30, 58, 138, 0.95);
+  --navbar-transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --navbar-backdrop-blur: blur(20px) saturate(180%);
+  
+  /* Color Palette */
+  --color-silver-50: #f8fafc;
+  --color-silver-100: #f1f5f9;
+  --color-silver-200: #e2e8f0;
+  --color-silver-300: #cbd5e1;
+  --color-silver-400: #94a3b8;
+  --color-silver-500: #64748b;
+  --color-silver-600: #475569;
+  --color-silver-700: #334155;
+  --color-silver-800: #1e293b;
+  --color-silver-900: #0f172a;
+  
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  
+  --color-cyan-50: #ecfeff;
+  --color-cyan-100: #cffafe;
+  --color-cyan-200: #a5f3fc;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #155e75;
+  --color-cyan-900: #164e63;
+  
+  /* Transition Properties */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-premium: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-elastic: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-smart: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Shadow Properties */
+  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
+  --shadow-glow-cyan: 0 0 20px rgba(34, 211, 238, 0.3);
+  --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-smart-navbar: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
+  /* Backdrop Blur */
+  --backdrop-blur-sm: blur(4px);
+  --backdrop-blur-md: blur(12px);
+  --backdrop-blur-lg: blur(16px);
+  --backdrop-blur-xl: blur(24px);
+  --backdrop-blur-smart: blur(20px) saturate(180%);
+}
+
+/* Hardware Acceleration for Smooth Scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Smart Navbar Classes */
+.smart-navbar {
+  transition: var(--navbar-transition);
+  will-change: background-color, backdrop-filter, border-color, box-shadow, opacity;
+}
+
+.smart-navbar-hero {
+  background: var(--navbar-hero-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.smart-navbar-scrolled {
+  background: var(--navbar-scrolled-bg);
+  backdrop-filter: var(--navbar-backdrop-blur);
+  -webkit-backdrop-filter: var(--navbar-backdrop-blur);
+  border-color: rgba(34, 211, 238, 0.2);
+  box-shadow: var(--shadow-smart-navbar);
+}
+
+.smart-navbar-activated {
+  background: var(--navbar-activated-bg);
+  backdrop-filter: var(--navbar-backdrop-blur);
+  -webkit-backdrop-filter: var(--navbar-backdrop-blur);
+  border-color: rgba(34, 211, 238, 0.3);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+/* Enhanced Scroll Transition Classes */
+.scroll-transition-navbar {
+  transition: var(--transition-premium);
+  will-change: background-color, backdrop-filter, border-color, box-shadow;
+}
+
+.scroll-transition-element {
+  transition: var(--transition-elastic);
+  will-change: background-color, transform, box-shadow, color;
+}
+
+/* Smart Text Color Transitions */
+.text-smart-hero {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-smart);
+}
+
+.text-smart-hero:hover {
+  color: var(--color-cyan-300);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+.text-smart-scrolled {
+  color: var(--color-cyan-200);
+  transition: var(--transition-smart);
+}
+
+.text-smart-scrolled:hover {
+  color: white;
+}
+
+/* Scroll-Activated Background Transitions */
+.bg-transition-silver-to-blue {
+  background: linear-gradient(135deg, var(--color-silver-800), var(--color-silver-900));
+  transition: var(--transition-premium);
+}
+
+.bg-transition-silver-to-blue.scrolled {
+  background: linear-gradient(135deg, var(--color-blue-800), var(--color-blue-900));
+}
+
+.bg-transition-silver-to-blue.target-reached {
+  background: linear-gradient(135deg, var(--color-blue-600), var(--color-cyan-500));
+  box-shadow: var(--shadow-glow-blue);
+}
+
+/* Smart Logo Transitions */
+.logo-smart-transition {
+  transition: var(--transition-smart);
+  will-change: border-color, background-color, box-shadow, transform;
+}
+
+.logo-smart-hero {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.logo-smart-scrolled {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Numeric Element Highlight Transitions */
+.numeric-highlight {
+  position: relative;
+  transition: var(--transition-elastic);
+  will-change: background-color, transform, box-shadow;
+}
+
+.numeric-highlight::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, transparent, var(--color-blue-400), transparent);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+.numeric-highlight.activated {
+  background: linear-gradient(135deg, var(--color-blue-600), var(--color-cyan-400));
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow-blue);
+  color: white;
+}
+
+.numeric-highlight.activated::before {
+  opacity: 1;
+  animation: rotate-border 2s linear infinite;
+}
+
+/* Premium Glow Effects */
+.glow-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--color-blue-400), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.glow-effect.active::after {
+  opacity: 0.3;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Smart Hover Effects */
+.smart-hover-hero {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.smart-hover-scrolled {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Smooth Scroll Animations */
+@keyframes rotate-border {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.2; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.4; 
+    transform: scale(1.02);
+  }
+}
+
+@keyframes slide-in-from-top {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes smart-reveal {
+  0% {
+    opacity: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: var(--backdrop-blur-smart);
+    -webkit-backdrop-filter: var(--backdrop-blur-smart);
+  }
+}
+
+/* Responsive Scroll Transitions */
+@media (max-width: 768px) {
+  .scroll-transition-element {
+    transition: var(--transition-smooth);
+  }
+  
+  .numeric-highlight.activated {
+    transform: scale(1.02);
+  }
+  
+  .smart-navbar {
+    transition: all 0.5s ease-out;
+  }
+}
+
+/* Accessibility Considerations */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-transition-navbar,
+  .scroll-transition-element,
+  .numeric-highlight,
+  .smart-navbar {
+    transition: none;
+    animation: none;
+  }
+  
+  .glow-effect::after {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .numeric-highlight.activated {
+    background: var(--color-blue-600);
+    border: 2px solid var(--color-cyan-400);
+  }
+  
+  .smart-navbar-scrolled {
+    border: 2px solid var(--color-cyan-400);
+  }
+}
+
+/* Performance Optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-background {
+  will-change: background-color;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-smart {
+  will-change: background-color, backdrop-filter, border-color, box-shadow, opacity;
+}
+
+/* Remove will-change after animation */
+.animation-complete {
+  will-change: auto;
+}
+
+/* Scroll Progress Indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-cyan-400), var(--color-blue-500));
+  transform-origin: left;
+  z-index: 9999;
+  transition: transform 0.1s ease-out;
+}
+
+/* Enhanced Backdrop Blur Effects */
+.backdrop-blur-premium {
+  backdrop-filter: var(--backdrop-blur-xl) saturate(180%);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl) saturate(180%);
+}
+
+.backdrop-blur-smart {
+  backdrop-filter: var(--backdrop-blur-smart);
+  -webkit-backdrop-filter: var(--backdrop-blur-smart);
+}
+
+/* Smooth Scrolling Container */
+.smooth-scroll-container {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Premium Button Hover Effects */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-premium);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-premium:hover::before {
+  left: 100%;
+}
+
+/* Text Color Transitions */
+.text-transition {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.text-transition.highlighted {
+  color: var(--color-cyan-300);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+}
+
+/* Smart Mobile Menu Transitions */
+.mobile-menu-smart {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  animation: slide-in-from-top 0.3s ease-out;
+}
+
+/* Enhanced Social Icon Transitions */
+.social-icon-smart {
+  transition: var(--transition-smart);
+  will-change: transform, color, text-shadow;
+}
+
+.social-icon-smart:hover {
+  transform: scale(1.1);
+}
+
+.social-icon-hero:hover {
+  color: var(--color-cyan-300);
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+}
+
+/* Smart Border Transitions */
+.border-smart {
+  transition: border-color 0.5s ease;
+}
+
+.border-smart-hero {
+  border-color: rgba(34, 211, 238, 0.2);
+}
+
+.border-smart-scrolled {
+  border-color: rgba(34, 211, 238, 0.3);
+}

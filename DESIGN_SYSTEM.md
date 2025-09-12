@@ -332,3 +332,5 @@ When adding new components or utilities:
 ---
 
 **Star AI Labs Design System** - Building the future of digital experiences.
+
+Made in Nilanjan Nayak

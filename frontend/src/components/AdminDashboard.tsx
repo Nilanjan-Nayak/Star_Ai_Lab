@@ -1,10 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { ProjectContext } from '../context/ProjectContext';
 import LoginForm from './LoginForm';
 import AdminNavbar from './AdminNavbar';
 import ProjectManager from './ProjectManager';
-import { BarChart3, FolderOpen, Users, Settings } from 'lucide-react';
+import VisitorAnalyticsDashboard from './VisitorAnalyticsDashboard';
+import { BarChart3, FolderOpen, Users, Settings, Activity } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -60,6 +61,8 @@ const AdminDashboard = () => {
     switch (activeTab) {
       case 'projects':
         return <ProjectManager />;
+      case 'analytics':
+        return <VisitorAnalyticsDashboard />;
       case 'overview':
       default:
         return (
@@ -156,6 +159,16 @@ const AdminDashboard = () => {
               }`}
             >
               Projects
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'analytics'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Analytics
             </button>
           </nav>
         </div>

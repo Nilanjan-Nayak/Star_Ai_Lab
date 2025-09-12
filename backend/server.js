@@ -8,6 +8,7 @@ require('dotenv').config();
 const projectRoutes = require('./routes/projects');
 const authRoutes = require('./routes/auth');
 const contactRoutes = require('./routes/contact');
+const visitorRoutes = require('./routes/visitors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'http://localhost:5173',
+    'http://localhost:5174',
     'http://localhost:5000',
     'http://localhost:3000'
   ],
@@ -28,13 +30,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB Connection (Optional - only needed for projects and auth features)
-if (process.env.MONGODB_URI || process.env.ENABLE_MONGODB === 'true') {
-  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/star-ai-labs')
-  .then(() => console.log('✅ Connected to MongoDB'))
+// MongoDB Connection
+if (process.env.MONGODB_URI && process.env.ENABLE_MONGODB === 'true') {
+  mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('✅ Connected to MongoDB Atlas');
+    console.log(`📊 Database: ${process.env.MONGODB_URI.split('@')[1].split('/')[0]}`);
+  })
   .catch(err => {
-    console.error('❌ MongoDB connection error:', err);
-    console.log('⚠️  MongoDB is not available. Contact form will still work, but projects and auth features will be disabled.');
+    console.error('❌ MongoDB connection error:', err.message);
+    console.log('⚠️  MongoDB connection failed. Projects and auth features may not work properly.');
+    console.log('🔧 Check your MongoDB connection string and credentials.');
   });
 } else {
   console.log('ℹ️  MongoDB is disabled. Contact form will work, but projects and auth features are disabled.');
@@ -44,6 +50,7 @@ if (process.env.MONGODB_URI || process.env.ENABLE_MONGODB === 'true') {
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/visitors', visitorRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
