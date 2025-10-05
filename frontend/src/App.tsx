@@ -12,6 +12,8 @@ import VisitorTracking from './components/VisitorTracking';
 import { AuthProvider } from './context/AuthContext';
 import { ProjectProvider } from './context/ProjectContext';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
+import  { Ai_Demo } from './components/Ai_Demo';
+
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function AppContent() {
               <Hero />
               <About />
               <WatchDemo/>
+              <Ai_Demo />
               <Projects/>
               <Contact />
               <Footer />

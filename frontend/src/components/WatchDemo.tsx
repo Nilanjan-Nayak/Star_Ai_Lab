@@ -1,10 +1,9 @@
 
-import { Star, Zap, Play, Clock, Users,  } from 'lucide-react';
+import { Star, Zap,  } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const WatchDemo = () => {
   const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set());
-  const [activeVideo, setActiveVideo] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -32,40 +31,6 @@ const WatchDemo = () => {
   }, []);
 
   const isVisible = (elementId: string) => visibleElements.has(elementId);
-
-  const demoVideos = [
-    {
-      id: 1,
-      title: "AI Model Training",
-      description: "Watch our advanced AI models learn and adapt in real-time",
-      duration: "3:45",
-      category: "Machine Learning",
-      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225'%3E%3Cdefs%3E%3ClinearGradient id='bg1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23000000'/%3E%3Cstop offset='50%25' style='stop-color:%231e3a8a'/%3E%3Cstop offset='100%25' style='stop-color:%230066ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23bg1)'/%3E%3Ctext x='50%25' y='45%25' font-family='Inter, sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'%3EAI Training%3C/text%3E%3Ctext x='50%25' y='65%25' font-family='Inter, sans-serif' font-size='12' fill='%2393c5fd' text-anchor='middle'%3EDemo Video%3C/text%3E%3C/svg%3E",
-      videoSrc: "/src/img/LOGO amimation.mp4"
-    },
-    {
-      id: 2,
-      title: "Data Processing",
-      description: "See how we process and analyze massive datasets efficiently",
-      duration: "2:30",
-      category: "Data Science",
-      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225'%3E%3Cdefs%3E%3ClinearGradient id='bg2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23000000'/%3E%3Cstop offset='50%25' style='stop-color:%2306b6d4'/%3E%3Cstop offset='100%25' style='stop-color:%2300d4ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23bg2)'/%3E%3Ctext x='50%25' y='45%25' font-family='Inter, sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'%3EData Processing%3C/text%3E%3Ctext x='50%25' y='65%25' font-family='Inter, sans-serif' font-size='12' fill='%2393c5fd' text-anchor='middle'%3EDemo Video%3C/text%3E%3C/svg%3E",
-      videoSrc: "/src/img/LOGO amimation.mp4"
-    },
-    {
-      id: 3,
-      title: "Real-time Analytics",
-      description: "Experience our real-time analytics and insights generation",
-      duration: "4:15",
-      category: "Analytics",
-      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225'%3E%3Cdefs%3E%3ClinearGradient id='bg3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23000000'/%3E%3Cstop offset='50%25' style='stop-color:%233b82f6'/%3E%3Cstop offset='100%25' style='stop-color:%2360a5fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23bg3)'/%3E%3Ctext x='50%25' y='45%25' font-family='Inter, sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'%3EReal-time Analytics%3C/text%3E%3Ctext x='50%25' y='65%25' font-family='Inter, sans-serif' font-size='12' fill='%2393c5fd' text-anchor='middle'%3EDemo Video%3C/text%3E%3C/svg%3E",
-      videoSrc: "/src/img/LOGO amimation.mp4"
-    }
-  ];
-
-  const handleVideoPlay = (videoId: number) => {
-    setActiveVideo(activeVideo === videoId ? null : videoId);
-  };
   return (
     <section ref={sectionRef} id="demo" className="py-24 bg-premium-deep relative overflow-hidden">
       {/* Premium Background Effects */}
@@ -154,6 +119,8 @@ const WatchDemo = () => {
           </div>
         </div>
       </div>
+
+      
     </section>
   );
 };
