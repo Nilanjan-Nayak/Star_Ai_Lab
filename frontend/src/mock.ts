@@ -17,13 +17,16 @@ export enum AccentColor {
 /**
  * Supported icon types from lucide-react or similar icon library
  */
-export type IconType = 
+export type IconType =
   | 'Brain'
   | 'Mic'
   | 'Globe'
   | 'TrendingUp'
   | 'Users'
-  | 'BarChart3';
+  | 'BarChart3'
+  | 'Image'
+  | 'Calendar'
+  | 'TestTube';
 
 /**
  * Message sender types for chatbot interface
@@ -294,6 +297,51 @@ export const MOCK_FEATURES: readonly Feature[] = Object.freeze([
       'ROI Insights',
     ],
   }),
+  createFeature({
+    id: 7,
+    title: 'AI-Powered Image Generation',
+    description:
+      'Generate stunning visuals, graphics, and illustrations that perfectly complement your written content using advanced AI image models.',
+    icon: 'Image',
+    color: AccentColor.PINK,
+    capabilities: [
+      'Custom Illustrations',
+      'Social Media Graphics',
+      'Blog Images',
+      'Infographics',
+      'Brand Assets',
+    ],
+  }),
+  createFeature({
+    id: 8,
+    title: 'Content Scheduling & Publishing',
+    description:
+      'Schedule and automatically publish content across multiple platforms with optimal timing and engagement analytics.',
+    icon: 'Calendar',
+    color: AccentColor.ORANGE,
+    capabilities: [
+      'Auto-Scheduling',
+      'Multi-Platform Publishing',
+      'Engagement Optimization',
+      'Content Calendar',
+      'Performance Analytics',
+    ],
+  }),
+  createFeature({
+    id: 9,
+    title: 'Advanced A/B Testing',
+    description:
+      'Test different versions of your content with AI-powered A/B testing to optimize engagement and conversion rates.',
+    icon: 'TestTube',
+    color: AccentColor.GREEN,
+    capabilities: [
+      'Content Variations',
+      'Performance Testing',
+      'Conversion Optimization',
+      'Audience Insights',
+      'Automated Reporting',
+    ],
+  }),
 ]);
 
 // ============================================================================
@@ -528,6 +576,45 @@ export const MOCK_TESTIMONIALS: readonly Testimonial[] = Object.freeze([
     metrics: '85% time savings on content creation',
     verifiedPurchase: true,
   },
+  {
+    id: 5,
+    name: 'Lisa Thompson',
+    role: 'Social Media Manager',
+    company: 'Creative Agency Pro',
+    avatar:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
+    content:
+      'The multi-language support is incredible. We expanded to 15 new markets in just 3 months, and the content quality is consistent across all languages.',
+    rating: 5,
+    metrics: '15 new markets entered',
+    verifiedPurchase: true,
+  },
+  {
+    id: 6,
+    name: 'Alex Chen',
+    role: 'E-commerce Director',
+    company: 'ShopSmart',
+    avatar:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+    content:
+      'Product descriptions that actually convert! Our sales increased by 65% after implementing WriteGenius for all our product listings.',
+    rating: 5,
+    metrics: '65% sales increase',
+    verifiedPurchase: true,
+  },
+  {
+    id: 7,
+    name: 'Rachel Green',
+    role: 'Content Strategist',
+    company: 'Digital First Media',
+    avatar:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+    content:
+      'The SEO optimization feature is a game-changer. Our organic traffic doubled in 6 months, and we consistently rank for competitive keywords.',
+    rating: 5,
+    metrics: '200% organic traffic growth',
+    verifiedPurchase: true,
+  },
 ]);
 
 // ============================================================================
@@ -547,10 +634,11 @@ export const MOCK_CHATBOT_INITIAL_MESSAGES: readonly ChatbotMessage[] = Object.f
 // Mock Data - Demo Content
 // ============================================================================
 
-export const MOCK_DEMO_CONTENT: DemoContent = Object.freeze({
-  inputPrompt:
-    'Write a professional email to introduce our new AI writing assistant to potential customers',
-  outputContent: `Subject: Introducing WriteGenius - Your New AI Writing Partner
+export const MOCK_DEMO_CONTENTS: readonly DemoContent[] = Object.freeze([
+  {
+    inputPrompt:
+      'Write a professional email to introduce our new AI writing assistant to potential customers',
+    outputContent: `Subject: Introducing WriteGenius - Your New AI Writing Partner
 
 Dear [Customer Name],
 
@@ -571,15 +659,114 @@ Best regards,
 [Your Name]
 
 P.S. Join over 50,000+ content creators who've already made the switch to AI-powered writing.`,
-  metrics: Object.freeze({
-    wordsGenerated: 156,
-    timeToGenerate: 2.3,
-    seoScore: 92 as Score,
-    readabilityScore: 88 as Score,
-  }),
-  modelUsed: 'GPT-4 Turbo',
-  generatedAt: new Date(),
-});
+    metrics: Object.freeze({
+      wordsGenerated: 156,
+      timeToGenerate: 2.3,
+      seoScore: 92 as Score,
+      readabilityScore: 88 as Score,
+    }),
+    modelUsed: 'GPT-4 Turbo',
+    generatedAt: new Date(),
+  },
+  {
+    inputPrompt:
+      'Write a compelling blog post about the future of AI in content creation',
+    outputContent: `# The Future of AI in Content Creation: Revolutionizing How We Write
+
+In an era where digital content reigns supreme, artificial intelligence is not just a buzzword—it's becoming the cornerstone of modern content creation. As businesses grapple with the ever-increasing demand for high-quality, engaging content, AI-powered writing tools are emerging as game-changers.
+
+## The Current State of AI Writing
+
+AI writing assistants have evolved from simple grammar checkers to sophisticated content generation platforms. Today's advanced models can understand context, maintain brand voice, and even adapt to different writing styles. But this is just the beginning.
+
+## What's Next for AI Content Creation?
+
+### 1. Hyper-Personalization
+Future AI systems will analyze user behavior, preferences, and engagement patterns to create content that's not just relevant, but deeply personalized. Imagine blog posts that adapt their tone and examples based on your audience's demographics and interests.
+
+### 2. Multi-Modal Content Generation
+The next generation of AI will seamlessly combine text, images, videos, and audio. A single prompt could generate a complete social media campaign with accompanying visuals and voiceovers.
+
+### 3. Real-Time Collaboration
+AI will become an active participant in the creative process, suggesting improvements, generating multiple variations, and even mediating between team members with different creative visions.
+
+### 4. Ethical AI Content
+As AI becomes more prevalent, we'll see increased focus on ethical content creation—ensuring diversity, avoiding bias, and maintaining authenticity in AI-generated materials.
+
+## The Human-AI Partnership
+
+The future isn't about AI replacing human writers—it's about AI augmenting human creativity. The most successful content strategies will combine human insight and emotional intelligence with AI's speed and scalability.
+
+Are you ready to embrace the future of content creation? The revolution is here, and it's powered by AI.`,
+    metrics: Object.freeze({
+      wordsGenerated: 387,
+      timeToGenerate: 4.1,
+      seoScore: 95 as Score,
+      readabilityScore: 82 as Score,
+    }),
+    modelUsed: 'Claude-3',
+    generatedAt: new Date(),
+  },
+  {
+    inputPrompt:
+      'Create an engaging social media post about our new AI image generation feature',
+    outputContent: `🚀 Just dropped: AI-Powered Image Generation! 
+
+Tired of spending hours searching for the perfect stock photo or hiring expensive designers? Our new AI image generation feature creates stunning, custom visuals in seconds! 
+
+✨ What you get:
+• Custom illustrations for your blog posts
+• Eye-catching social media graphics  
+• Professional product mockups
+• Brand-consistent visual assets
+
+Just describe what you need in plain English, and watch the magic happen! From "a futuristic office with diverse team members collaborating" to "an abstract representation of AI innovation," we've got you covered.
+
+The future of content creation is visual AND textual. Try it now! 🎨✨
+
+#AI #ContentCreation #Design #Marketing #Innovation`,
+    metrics: Object.freeze({
+      wordsGenerated: 142,
+      timeToGenerate: 1.8,
+      seoScore: 78 as Score,
+      readabilityScore: 91 as Score,
+    }),
+    modelUsed: 'Gemini Pro',
+    generatedAt: new Date(),
+  },
+  {
+    inputPrompt:
+      'Write a product description for a premium wireless headset',
+    outputContent: `Premium Wireless Headset - Crystal Clear Audio Excellence
+
+Experience audio perfection with our flagship wireless headset, engineered for professionals who demand the highest quality sound. Whether you're in back-to-back video calls, editing audio tracks, or simply enjoying your favorite music, these headphones deliver studio-grade performance in a sleek, comfortable design.
+
+**Key Features:**
+• **Active Noise Cancellation**: Block out distractions with advanced ANC technology that adapts to your environment
+• **40mm Drivers**: Custom-designed drivers deliver rich, detailed sound across the entire frequency range
+• **30-Hour Battery Life**: All-day power with quick charge technology (5 minutes = 3 hours of playback)
+• **Premium Comfort**: Memory foam ear cushions and adjustable headband for extended wear
+• **Multi-Device Connectivity**: Seamlessly switch between laptop, tablet, and phone
+• **Built-in Microphone**: Crystal-clear voice capture with noise reduction for professional calls
+
+**What's in the Box:**
+• Premium Wireless Headset
+• USB-C charging cable
+• 3.5mm audio adapter
+• Carrying case
+• Quick start guide
+
+Elevate your audio experience with technology that matches your professional standards. Available in Black, Silver, and Midnight Blue.`,
+    metrics: Object.freeze({
+      wordsGenerated: 198,
+      timeToGenerate: 2.7,
+      seoScore: 89 as Score,
+      readabilityScore: 85 as Score,
+    }),
+    modelUsed: 'GPT-4 Turbo',
+    generatedAt: new Date(),
+  },
+]);
 
 // ============================================================================
 // Utility Functions

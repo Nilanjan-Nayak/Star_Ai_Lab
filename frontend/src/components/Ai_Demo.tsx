@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { 
   RotateCcw, 
@@ -8,11 +6,10 @@ import {
   Star,
   Sparkles, 
   Zap, 
-  Brain, 
   ChevronDown,
   Sliders
 } from 'lucide-react';
-import { MOCK_DEMO_CONTENT, ContentMetrics } from '../mock';
+import { MOCK_DEMO_CONTENTS, ContentMetrics } from '../mock';
 
 interface AIModel {
   id: string;
@@ -25,28 +22,12 @@ interface AIModel {
 
 const AI_MODELS: AIModel[] = [
   {
-    id: 'gpt4',
-    name: 'GPT-4 Turbo',
+    id: 'RocketStar',
+    name: 'Star _Turbo',
     icon: <Sparkles className="w-5 h-5" />,
     description: 'Most advanced model with superior understanding and creativity',
     features: ['Advanced reasoning', 'Complex task handling', 'Nuanced writing'],
     color: 'bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600'
-  },
-  {
-    id: 'claude3',
-    name: 'Claude-3',
-    icon: <Brain className="w-5 h-5" />,
-    description: 'Specialized in analytical and academic content',
-    features: ['Research synthesis', 'Technical writing', 'Data analysis'],
-    color: 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-700'
-  },
-  {
-    id: 'gemini',
-    name: 'Gemini Pro',
-    icon: <Zap className="w-5 h-5" />,
-    description: 'Balanced performance with fast generation',
-    features: ['Fast processing', 'Balanced output', 'Multilingual support'],
-    color: 'bg-gradient-to-r from-sky-400 via-blue-500 to-cyan-600'
   }
 ];
 
@@ -70,9 +51,9 @@ const Ai_Demo = () => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [showOutput, setShowOutput] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-  const [currentPrompt, setCurrentPrompt] = useState<string>(MOCK_DEMO_CONTENT.inputPrompt);
-  const [outputContent, setOutputContent] = useState<string>(MOCK_DEMO_CONTENT.outputContent);
-  const [contentMetrics, setContentMetrics] = useState<ContentMetrics>(MOCK_DEMO_CONTENT.metrics);
+  const [currentPrompt, setCurrentPrompt] = useState<string>(MOCK_DEMO_CONTENTS[0].inputPrompt);
+  const [outputContent, setOutputContent] = useState<string>(MOCK_DEMO_CONTENTS[0].outputContent);
+  const [contentMetrics, setContentMetrics] = useState<ContentMetrics>(MOCK_DEMO_CONTENTS[0].metrics);
 
   const [contentType, setContentType] = useState(CONTENT_TYPES[0]);
   const [tone, setTone] = useState(TONES[0]);
@@ -127,7 +108,7 @@ const Ai_Demo = () => {
 
   const handleReset = (): void => {
     setShowOutput(false);
-    setCurrentPrompt(MOCK_DEMO_CONTENT.inputPrompt);
+    setCurrentPrompt(MOCK_DEMO_CONTENTS[0].inputPrompt);
     setSelectedModel(AI_MODELS[0]);
     setContentType(CONTENT_TYPES[0]);
     setTone(TONES[0]);
@@ -154,11 +135,7 @@ const Ai_Demo = () => {
 
       <div className="container relative">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-black/90 via-slate-900/80 to-black/90 border border-blue-500/40 rounded-full text-blue-300 text-sm font-semibold mb-8 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.8),0_8px_16px_rgba(59,130,246,0.3),0_4px_8px_rgba(6,182,212,0.2),inset_0_1px_0_rgba(255,255,255,0.1)]">
-            <Star className="h-5 w-5 mr-3 text-cyan-400" />
-            Premium AI Content Generation
-            <Zap className="h-5 w-5 ml-3 text-blue-400" />
-          </div>
+          
           
           <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]">
             Experience

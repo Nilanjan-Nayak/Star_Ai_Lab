@@ -11,17 +11,21 @@ import AdminDashboard from './components/AdminDashboard';
 import VisitorTracking from './components/VisitorTracking';
 import { AuthProvider } from './context/AuthContext';
 import { ProjectProvider } from './context/ProjectContext';
+import { ModalProvider } from './context/ModalContext';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
-import  { Ai_Demo } from './components/Ai_Demo';
+// import  { Ai_Demo } from './components/Ai_Demo';
+import Demo_card from './components/Demo_card'
 
 
 function App() {
   return (
     <AuthProvider>
       <ProjectProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <ModalProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ModalProvider>
       </ProjectProvider>
     </AuthProvider>
   );
@@ -47,7 +51,8 @@ function AppContent() {
               <Hero />
               <About />
               <WatchDemo/>
-              <Ai_Demo />
+              {/* <Ai_Demo /> */}
+              <Demo_card/>
               <Projects/>
               <Contact />
               <Footer />
