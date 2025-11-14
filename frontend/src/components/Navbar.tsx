@@ -97,28 +97,14 @@ const Navbar = () => {
       <div className="relative mx-4 px-4">
         <div className="flex items-center justify-between h-16">
           {/* Professional Logo with Simple Transitions */}
-          <div 
-            className="flex items-center space-x-3 cursor-pointer"
+          <div
+            className="flex items-center cursor-pointer"
             onClick={() => scrollToSection("home")}
           >
-            <img
-              src="/src/img/star-ai-logo.png"
-              alt="Star AI Labs Logo"
-              className="h-10 w-10 object-contain rounded-full border-2 transition-all duration-300"
-              style={logoImageStyle}
-            />
-            <div className="flex flex-col">
-              <span className={`font-bold text-lg leading-tight transition-colors duration-300 ${getTextColorClass(true)}`}>
-                Star AI Lab
-              </span>
-              <span className={`text-xs font-medium leading-tight transition-colors duration-300 ${
-                isInHeroSection 
-                  ? 'text-cyan-300/90' 
-                  : 'text-cyan-400'
-              }`}>
-                AI Solutions
-              </span>
-            </div>
+            <span className={`font-bold text-2xl leading-tight transition-colors duration-300 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent`}>
+              Star AI Lab
+            </span>
+            
           </div>
 
           {/* Professional Desktop Navigation */}
@@ -180,24 +166,14 @@ const Navbar = () => {
           >
             <div className="py-6 space-y-2">
               {/* Mobile Logo */}
-              <div className="flex items-center justify-center space-x-3 pb-4 mb-4"
+              <div className="flex items-center justify-center pb-4 mb-4"
                 style={{
                   borderBottom: `1px solid rgba(34, 211, 238, ${0.2 * borderOpacity})`,
                 }}
               >
-                <img
-                  src="/src/img/star-ai-logo.png"
-                  alt="Star AI Labs Logo"
-                  className="h-8 w-8 object-contain rounded-full border-2 border-blue-500/40 bg-white/10"
-                />
-                <div className="flex flex-col">
-                  <span className="text-white font-bold text-base leading-tight">
-                    Star AI Lab
-                  </span>
-                  <span className="text-cyan-400 text-xs font-medium leading-tight">
-                    AI Solutions
-                  </span>
-                </div>
+                <span className="font-bold text-xl leading-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Star AI Lab
+                </span>
               </div>
 
               {/* Mobile Menu Items */}

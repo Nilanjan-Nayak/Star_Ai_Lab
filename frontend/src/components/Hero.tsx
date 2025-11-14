@@ -410,18 +410,18 @@ const Hero = () => {
         </div>
 
         {/* Main Content Container */}
-        <div className="relative z-10 flex items-center min-h-screen">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 flex items-center min-h-screen pt-24 md:pt-16 lg:pt-0 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-center">
               
               {/* Left Column - Enhanced Content */}
               <div className="space-y-8">
                 {/* Premium Badge */}
-                <div className="inline-flex items-center px-6 py-3 bg-black/40 border border-blue-500/30 rounded-full text-blue-300 text-sm font-medium backdrop-blur-xl shadow-2xl">
+                <div className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 bg-black/40 border border-blue-500/30 rounded-full text-blue-300 text-xs md:text-sm font-medium backdrop-blur-xl shadow-2xl">
                   <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse" />
                   Nialanjan Nayak
                 </div>
-                <div className="inline-flex items-center px-6 py-3 bg-black/40 border border-blue-500/30 rounded-full text-blue-300 text-sm font-medium backdrop-blur-xl shadow-2xl">
+                <div className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 bg-black/40 border border-blue-500/30 rounded-full text-blue-300 text-xs md:text-sm font-medium backdrop-blur-xl shadow-2xl">
                   <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse" />
                   Powering the Future of Enterprise Intelligence
                 </div>

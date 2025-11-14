@@ -15,8 +15,8 @@ const Card: React.FC = () => {
   
   const cardData: CardData[] = [
     { 
-      title: 'Email Writing',
-      description: 'Generate professional emails with AI',
+      title: 'Content Magic',
+      description: 'Generate professional & unic Content Magic with AI',
       component: <Ai_Demo />
     },
     { 
