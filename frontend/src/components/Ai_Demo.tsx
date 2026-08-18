@@ -15,7 +15,7 @@ const Ai_Demo = () => {
             
 
             <div className="container relative h-full">
-                <iframe src="https://content-magic.netlify.app/" width="100%"
+                <iframe src="https://content-magic-main.netlify.app/" width="100%"
                     height="100%"
                     className='border-none'
                     title="Embedded Web App"></iframe>

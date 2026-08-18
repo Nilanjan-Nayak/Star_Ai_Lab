@@ -1,0 +1,135 @@
+[
+  {
+    "_id": "666b5e6f8c6faa446e8b41c0",
+    "title": "Media Storage",
+    "description": "An IoT-based environmental monitoring system that tracks air quality, temperature, humidity, and noise levels.",
+    "shortDescription": "IoT system for real-time environmental monitoring with sensor networks and cloud analytics.",
+    "category": "storage",
+    "status": "On Hold",
+    "technologies": [
+      "Arduino",
+      "Raspberry Pi",
+      "Python",
+      "AWS IoT",
+      "InfluxDB",
+      "Grafana"
+    ],
+    "tags": [
+      "iot",
+      "environmental-monitoring",
+      "sensors"
+    ],
+    "githubUrl": "https://github.com/starailabs/iot-monitoring",
+    "liveUrl": "",
+    "featured": false,
+    "imageUrl": "",
+    "startDate": "2024-04-01",
+    "createdAt": "2024-04-01T00:00:00.000Z",
+    "updatedAt": "2026-08-16T12:01:57.214Z"
+  },
+  {
+    "_id": "55e3a5e8eb4e7e63b4737fa5",
+    "title": "Star AI",
+    "description": "A comprehensive mobile health monitoring application with AI-powered health insights.",
+    "shortDescription": "AI-powered mobile app for comprehensive health monitoring and personalized insights.",
+    "category": "AI/ML",
+    "status": "In Progress",
+    "technologies": [
+      "React Native",
+      "Python",
+      "TensorFlow",
+      "Firebase",
+      "Node.js",
+      "MongoDB"
+    ],
+    "tags": [
+      "mobile-app",
+      "healthcare",
+      "ai-insights"
+    ],
+    "githubUrl": "https://github.com/starailabs/health-monitor-app",
+    "liveUrl": "",
+    "featured": true,
+    "imageUrl": "",
+    "startDate": "2024-05-01",
+    "createdAt": "2024-05-01T00:00:00.000Z",
+    "updatedAt": "2026-08-16T11:59:27.685Z"
+  },
+  {
+    "_id": "6fc677166c65c4917b7010f8",
+    "title": "Carreerkick",
+    "description": "A blockchain-based supply chain tracking system that provides transparency and traceability.",
+    "shortDescription": "Blockchain system for transparent supply chain tracking with smart contracts.",
+    "category": "AI/ML",
+    "status": "In Progress",
+    "technologies": [
+      "Web3.js",
+      "React",
+      "Tailwind CSS",
+      "Node.js"
+    ],
+    "tags": [
+      "blockchain",
+      "supply-chain",
+      "smart-contracts"
+    ],
+    "githubUrl": "https://github.com/starailabs/blockchain-supply-chain",
+    "liveUrl": "",
+    "featured": false,
+    "imageUrl": "",
+    "startDate": "2024-06-01",
+    "createdAt": "2024-06-01T00:00:00.000Z",
+    "updatedAt": "2026-08-16T11:59:27.685Z"
+  },
+  {
+    "title": "Star Interview Preparation",
+    "shortDescription": "AI Technical Interviewer Platform",
+    "description": "It was use for interview preparation. use new beginner student . and this are my V0.1 project",
+    "category": "AI/ML",
+    "status": "Completed",
+    "technologies": [
+      "HTML",
+      "CSS",
+      "JS",
+      "LLM",
+      "Node Js",
+      "PYTHON",
+      "etc."
+    ],
+    "tags": [
+      "LLM",
+      "AI"
+    ],
+    "githubUrl": "",
+    "liveUrl": "https://star-interview.onrender.com/",
+    "featured": true,
+    "imageUrl": "/uploads/project-1786881958073-762202193.png",
+    "_id": "48417cad1cd7dfa813147250",
+    "createdAt": "2026-08-16T12:05:58.125Z",
+    "updatedAt": "2026-08-16T12:18:32.285Z"
+  },
+  {
+    "title": "AgriVision Al",
+    "shortDescription": "Intelligent AI/ML Platform for Smart Agriculture",
+    "description": "A multimodal, agentic agricultural-intelligence platform combining machine learning, deep computer vision, GIS field analytics, weather intelligence, and retrieval-augmented generation (RAG) to provide farmers real-time decision support — fully localized in English (EN), Hindi (हिन्दी), and Bengali (বাংলা).",
+    "category": "AI/ML",
+    "status": "In Progress",
+    "technologies": [
+      "PYTHON",
+      "Java Script",
+      "CSS",
+      "HTML"
+    ],
+    "tags": [
+      "LLM",
+      "AI"
+    ],
+    "githubUrl": "https://github.com/Nilanjan-Nayak/AgriVision-Al.git",
+    "liveUrl": "",
+    "featured": false,
+    "imageUrl": "/uploads/project-1786882638572-233583644.jpeg",
+    "_id": "bfd50e82ebe58852b7c80a4e",
+    "createdAt": "2026-08-16T12:17:18.719Z",
+    "updatedAt": "2026-08-16T12:18:52.988Z"
+  }
+]

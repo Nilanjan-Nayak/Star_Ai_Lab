@@ -3,10 +3,20 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
+const dns = require('dns');
 require('dotenv').config();
+
+// Fix Windows DNS resolution issue for MongoDB SRV records
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore if unable to set custom DNS
+}
 
 const projectRoutes = require('./routes/projects');
 const authRoutes = require('./routes/auth');
+const adminAuthRoutes = require('./routes/adminAuth');
+const contentRoutes = require('./routes/content');
 const contactRoutes = require('./routes/contact');
 const visitorRoutes = require('./routes/visitors');
 
@@ -31,24 +41,30 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
+mongoose.set('bufferCommands', false);
+
 if (process.env.MONGODB_URI && process.env.ENABLE_MONGODB === 'true') {
-  mongoose.connect(process.env.MONGODB_URI)
+  mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => {
     console.log('✅ Connected to MongoDB Atlas');
     console.log(`📊 Database: ${process.env.MONGODB_URI.split('@')[1].split('/')[0]}`);
   })
   .catch(err => {
     console.error('❌ MongoDB connection error:', err.message);
-    console.log('⚠️  MongoDB connection failed. Projects and auth features may not work properly.');
+    console.log('⚠️  MongoDB connection failed. App running in resilient offline fallback mode.');
     console.log('🔧 Check your MongoDB connection string and credentials.');
   });
 } else {
-  console.log('ℹ️  MongoDB is disabled. Contact form will work, but projects and auth features are disabled.');
+  console.log('ℹ️  MongoDB is disabled. App running in offline fallback mode.');
 }
 
 // Routes
 app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin-auth', adminAuthRoutes);
+app.use('/api/content', contentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/visitors', visitorRoutes);
 

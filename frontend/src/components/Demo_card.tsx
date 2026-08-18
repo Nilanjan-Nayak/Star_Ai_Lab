@@ -3,6 +3,7 @@ import { Ai_Demo } from './Ai_Demo';
 import { useModal } from '../context/ModalContext';
 import { Modal } from './Modal';
 import ComingSoon from './ComingSoon';
+import { useContent } from '../context/ContentContext';
 
 interface CardData {
   title: string;
@@ -12,24 +13,21 @@ interface CardData {
 
 const Card: React.FC = () => {
   const { openModal } = useModal();
-  
-  const cardData: CardData[] = [
-    { 
-      title: 'Content Magic',
-      description: 'Generate professional & unic Content Magic with AI',
-      component: <Ai_Demo />
-    },
-    { 
-      title: 'AI Assistant',
-      description: 'Your personal AI powered assistant',
-      component: <ComingSoon />
-    },
-    { 
-      title: 'Code Generator',
-      description: 'Generate code snippets instantly',
-      component: <ComingSoon />
-    },
-  ];
+  const { getContent } = useContent();
+
+  const dynamicCards = getContent('demoCards', 'cards', [
+    { title: 'Content Magic', description: 'Generate professional & unic Content Magic with AI' },
+    { title: 'AI Assistant', description: 'Your personal AI powered assistant' },
+    { title: 'Code Generator', description: 'Generate code snippets instantly' }
+  ]);
+
+  const componentsList = [<Ai_Demo />, <ComingSoon />, <ComingSoon />];
+
+  const cardData: CardData[] = dynamicCards.map((c: any, index: number) => ({
+    title: c.title,
+    description: c.description,
+    component: componentsList[index] || <ComingSoon />
+  }));
 
   const handleCardClick = (data: CardData) => {
     openModal(data.component);
@@ -39,7 +37,7 @@ const Card: React.FC = () => {
     <div className="flex flex-col items-center space-y-6">
       {/* Professional Outer Heading */}
       <div className="text-center space-y-2">
-        <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+        <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent pb-2 pt-1 leading-snug">
           {data.title}
         </h3>
         <p className="text-blue-200/80 text-sm max-w-xs leading-relaxed">

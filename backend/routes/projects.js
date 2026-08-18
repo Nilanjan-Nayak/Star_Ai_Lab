@@ -3,8 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { body, validationResult } = require('express-validator');
-const Project = require('../models/Project');
-const auth = require('../middleware/auth');
+const projectStorage = require('../services/projectStorage');
+const adminAuth = require('../middleware/adminAuth');
 
 const router = express.Router();
 
@@ -46,35 +46,37 @@ const projectValidation = [
   body('title').trim().isLength({ min: 1, max: 100 }).withMessage('Title must be between 1 and 100 characters'),
   body('description').trim().isLength({ min: 1, max: 1000 }).withMessage('Description must be between 1 and 1000 characters'),
   body('shortDescription').trim().isLength({ min: 1, max: 200 }).withMessage('Short description must be between 1 and 200 characters'),
-  body('category').isIn(['AI/ML', 'Web Development', 'Mobile App', 'Data Science', 'IoT', 'Blockchain', 'Other']).withMessage('Invalid category'),
-  body('technologies').optional().isArray().withMessage('Technologies must be an array'),
-  body('githubUrl').optional().isURL().withMessage('Invalid GitHub URL'),
-  body('liveUrl').optional().isURL().withMessage('Invalid live URL')
+  body('category').isIn(['AI/ML', 'Web Development', 'Mobile App', 'Data Science', 'IoT', 'Blockchain', 'storage', 'Other']).withMessage('Invalid category'),
+  body('technologies').optional(),
+  body('githubUrl').optional({ values: 'falsy' }).isURL().withMessage('Invalid GitHub URL'),
+  body('liveUrl').optional({ values: 'falsy' }).isURL().withMessage('Invalid live URL')
 ];
 
 // GET /api/projects - Get all projects
 router.get('/', async (req, res) => {
   try {
-    const { featured, category, status, page = 1, limit = 10 } = req.query;
-    
-    let query = {};
-    if (featured === 'true') query.featured = true;
-    if (category) query.category = category;
-    if (status) query.status = status;
+    const { featured, category, status, page, limit } = req.query;
 
-    const projects = await Project.find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();
+    const allProjects = await projectStorage.getAllProjects({ featured, category, status });
 
-    const total = await Project.countDocuments(query);
+    if (page && limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const total = allProjects.length;
+      const paginated = allProjects.slice((pageNum - 1) * limitNum, pageNum * limitNum);
+      return res.json({
+        projects: paginated,
+        totalPages: Math.ceil(total / limitNum),
+        currentPage: pageNum,
+        total
+      });
+    }
 
     res.json({
-      projects,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
-      total
+      projects: allProjects,
+      totalPages: 1,
+      currentPage: 1,
+      total: allProjects.length
     });
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -85,7 +87,7 @@ router.get('/', async (req, res) => {
 // GET /api/projects/:id - Get single project
 router.get('/:id', async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await projectStorage.getProjectById(req.params.id);
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
@@ -97,7 +99,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/projects - Create new project
-router.post('/', auth, upload.single('image'), projectValidation, async (req, res) => {
+router.post('/', adminAuth, upload.single('image'), projectValidation, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -107,15 +109,15 @@ router.post('/', auth, upload.single('image'), projectValidation, async (req, re
     const projectData = {
       ...req.body,
       technologies: JSON.parse(req.body.technologies || '[]'),
-      tags: JSON.parse(req.body.tags || '[]')
+      tags: JSON.parse(req.body.tags || '[]'),
+      featured: req.body.featured === 'true' || req.body.featured === true
     };
 
     if (req.file) {
       projectData.imageUrl = `/uploads/${req.file.filename}`;
     }
 
-    const project = new Project(projectData);
-    await project.save();
+    const project = await projectStorage.createProject(projectData);
 
     res.status(201).json({ message: 'Project created successfully', project });
   } catch (error) {
@@ -125,7 +127,7 @@ router.post('/', auth, upload.single('image'), projectValidation, async (req, re
 });
 
 // PUT /api/projects/:id - Update project
-router.put('/:id', auth, upload.single('image'), projectValidation, async (req, res) => {
+router.put('/:id', adminAuth, upload.single('image'), projectValidation, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -135,18 +137,15 @@ router.put('/:id', auth, upload.single('image'), projectValidation, async (req, 
     const updateData = {
       ...req.body,
       technologies: JSON.parse(req.body.technologies || '[]'),
-      tags: JSON.parse(req.body.tags || '[]')
+      tags: JSON.parse(req.body.tags || '[]'),
+      featured: req.body.featured === 'true' || req.body.featured === true
     };
 
     if (req.file) {
       updateData.imageUrl = `/uploads/${req.file.filename}`;
     }
 
-    const project = await Project.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const project = await projectStorage.updateProject(req.params.id, updateData);
 
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
@@ -160,10 +159,10 @@ router.put('/:id', auth, upload.single('image'), projectValidation, async (req, 
 });
 
 // DELETE /api/projects/:id - Delete project
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
-    
+    const project = await projectStorage.deleteProject(req.params.id);
+
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }

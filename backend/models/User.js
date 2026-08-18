@@ -28,6 +28,26 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'user'
   },
+  isSuperAdmin: {
+    type: Boolean,
+    default: false
+  },
+  faceDescriptor: {
+    type: [Number], // 128-dimensional Float32 array from face-api.js
+    default: []
+  },
+  faceDescriptors: {
+    type: [[Number]], // Array of 128-dimensional vectors from multiple angles
+    default: []
+  },
+  otpAttempts: {
+    type: Number,
+    default: 0
+  },
+  lastOtpRequest: {
+    type: Date,
+    default: null
+  },
   isActive: {
     type: Boolean,
     default: true

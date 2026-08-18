@@ -26,7 +26,7 @@ const ProjectSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Project category is required'],
-    enum: ['AI/ML', 'Web Development', 'Mobile App', 'Data Science', 'IoT', 'Blockchain', 'Other'],
+    enum: ['AI/ML', 'Web Development', 'Mobile App', 'Data Science', 'IoT', 'Blockchain', 'storage', 'Other'],
     default: 'AI/ML'
   },
   status: {

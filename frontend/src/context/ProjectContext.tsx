@@ -27,6 +27,8 @@ interface ProjectContextType {
   deleteProject: (id: string) => Promise<void>;
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export const ProjectContext = createContext<ProjectContextType>({} as ProjectContextType);
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,17 +40,15 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/projects');
+      const response = await fetch(`${API_BASE}/api/projects`);
       if (response.ok) {
         const data = await response.json();
         setProjects(data.projects || []);
       } else {
-        // Don't throw error, just log it and continue with empty array
         console.log('API not available, using fallback data');
         setProjects([]);
       }
     } catch (err) {
-      // Don't set error state, just log and continue
       console.log('API connection failed, using fallback data');
       setProjects([]);
     } finally {
@@ -59,7 +59,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const createProject = async (projectData: FormData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch(`${API_BASE}/api/projects`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -81,7 +81,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProject = async (id: string, projectData: FormData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const response = await fetch(`${API_BASE}/api/projects/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -103,7 +103,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const deleteProject = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const response = await fetch(`${API_BASE}/api/projects/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

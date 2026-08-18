@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filter, Sparkles } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface Project {
   category: string;
@@ -12,165 +12,117 @@ interface ProjectFilterProps {
   projects: Project[];
 }
 
-const ProjectFilter: React.FC<ProjectFilterProps> = ({
-  selectedCategory,
-  onCategoryChange,
-  projects
-}) => {
-  // Get unique categories from projects with counts
-  const categoryStats = projects.reduce((acc, project) => {
-    const category = project.category;
-    if (!acc[category]) {
-      acc[category] = { total: 0, featured: 0 };
-    }
-    acc[category].total++;
-    if (project.featured) {
-      acc[category].featured++;
+/* Per-category colour tokens */
+const CATEGORY_TOKENS: Record<string, { text: string; activeBg: string; activeBorder: string; dot: string }> = {
+  All:              { text: 'text-white',       activeBg: 'bg-white/15',           activeBorder: 'border-white/30',         dot: 'bg-white' },
+  'AI/ML':          { text: 'text-violet-300',  activeBg: 'bg-violet-500/20',      activeBorder: 'border-violet-400/50',    dot: 'bg-violet-400' },
+  'Web Development':{ text: 'text-cyan-300',    activeBg: 'bg-cyan-500/20',        activeBorder: 'border-cyan-400/50',      dot: 'bg-cyan-400' },
+  'Mobile App':     { text: 'text-emerald-300', activeBg: 'bg-emerald-500/20',     activeBorder: 'border-emerald-400/50',   dot: 'bg-emerald-400' },
+  'Data Science':   { text: 'text-pink-300',    activeBg: 'bg-pink-500/20',        activeBorder: 'border-pink-400/50',      dot: 'bg-pink-400' },
+  IoT:              { text: 'text-orange-300',  activeBg: 'bg-orange-500/20',      activeBorder: 'border-orange-400/50',    dot: 'bg-orange-400' },
+  Blockchain:       { text: 'text-yellow-300',  activeBg: 'bg-yellow-500/20',      activeBorder: 'border-yellow-400/50',    dot: 'bg-yellow-400' },
+  storage:          { text: 'text-blue-300',    activeBg: 'bg-blue-500/20',        activeBorder: 'border-blue-400/50',      dot: 'bg-blue-400' },
+};
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  All: '✦', 'AI/ML': '🤖', 'Web Development': '🌐', 'Mobile App': '📱',
+  'Data Science': '📊', IoT: '🔗', Blockchain: '⛓️', storage: '💾',
+};
+
+const ProjectFilter: React.FC<ProjectFilterProps> = ({ selectedCategory, onCategoryChange, projects }) => {
+  if (projects.length === 0) return null;
+
+  /* Count per category */
+  const counts = projects.reduce((acc, p) => {
+    acc['All'] = (acc['All'] || 0) + 1;
+    acc[p.category] = (acc[p.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const featuredCounts = projects.reduce((acc, p) => {
+    if (p.featured) {
+      acc['All'] = (acc['All'] || 0) + 1;
+      acc[p.category] = (acc[p.category] || 0) + 1;
     }
     return acc;
-  }, {} as Record<string, { total: number; featured: number }>);
+  }, {} as Record<string, number>);
 
-  const categories = ['All', ...Object.keys(categoryStats).sort()];
-
-  const getCategoryCount = (category: string) => {
-    if (category === 'All') {
-      return {
-        total: projects.length,
-        featured: projects.filter(p => p.featured).length
-      };
-    }
-    return categoryStats[category] || { total: 0, featured: 0 };
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'AI/ML':
-        return '🤖';
-      case 'Web Development':
-        return '🌐';
-      case 'Mobile App':
-        return '📱';
-      case 'Data Science':
-        return '📊';
-      case 'IoT':
-        return '🔗';
-      case 'Blockchain':
-        return '⛓️';
-      case 'All':
-        return '🚀';
-      default:
-        return '💡';
-    }
-  };
-
-  const getCategoryGradient = (category: string, isActive: boolean) => {
-    if (!isActive) return '';
-    
-    switch (category) {
-      case 'AI/ML':
-        return 'from-indigo-600 to-purple-700';
-      case 'Web Development':
-        return 'from-blue-600 to-cyan-700';
-      case 'Mobile App':
-        return 'from-green-600 to-emerald-700';
-      case 'Data Science':
-        return 'from-purple-600 to-pink-700';
-      case 'IoT':
-        return 'from-orange-600 to-red-700';
-      case 'Blockchain':
-        return 'from-yellow-600 to-orange-700';
-      case 'All':
-        return 'from-blue-600 to-blue-700';
-      default:
-        return 'from-gray-600 to-gray-700';
-    }
-  };
-
-  if (projects.length === 0) {
-    return null;
-  }
+  const categories = ['All', ...Object.keys(counts).filter((c) => c !== 'All').sort()];
 
   return (
-    <div className="mb-16" role="region" aria-label="Project category filter">
-      {/* Filter Header */}
-      <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center text-blue-300 bg-gradient-to-r from-black/90 via-slate-900/80 to-black/90 px-6 py-3 rounded-full shadow-[0_8px_16px_rgba(0,0,0,0.6),0_4px_8px_rgba(59,130,246,0.2)] border border-blue-500/40 backdrop-blur-lg">
-          <Filter className="h-5 w-5 mr-2 text-cyan-400" />
-          <span className="font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Filter by Category</span>
-        </div>
-      </div>
-      
-      {/* Category Buttons */}
-      <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
-        {categories.map((category) => {
-          const { total, featured } = getCategoryCount(category);
-          const isActive = selectedCategory === category;
-          const gradient = getCategoryGradient(category, isActive);
-          
+    <div className="mb-10" role="region" aria-label="Project category filter">
+      {/* Pill row */}
+      <div className="flex flex-wrap justify-center gap-2.5">
+        {categories.map((cat) => {
+          const isActive = selectedCategory === cat;
+          const tokens = CATEGORY_TOKENS[cat] ?? CATEGORY_TOKENS['All'];
+          const total = counts[cat] ?? 0;
+          const feat = featuredCounts[cat] ?? 0;
+
           return (
             <button
-              key={category}
-              onClick={() => onCategoryChange(category)}
-              className={`
-                group relative inline-flex items-center px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 backdrop-blur-xl
-                ${isActive
-                  ? `bg-gradient-to-r ${gradient} text-white shadow-[0_16px_32px_rgba(0,0,0,0.6),0_8px_16px_rgba(59,130,246,0.4),0_4px_8px_rgba(6,182,212,0.3)] border-2 border-white/20`
-                  : 'bg-gradient-to-br from-slate-900/80 via-blue-950/60 to-slate-800/80 text-blue-200 border-2 border-blue-500/30 hover:border-blue-400/50 hover:text-white shadow-[0_8px_16px_rgba(0,0,0,0.6),0_4px_8px_rgba(30,58,138,0.2)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.7),0_6px_12px_rgba(59,130,246,0.3)]'
-                }
-              `}
+              key={cat}
+              onClick={() => onCategoryChange(cat)}
               aria-pressed={isActive}
-              aria-label={`Filter projects by ${category}. ${total} projects available${featured > 0 ? `, ${featured} featured` : ''}`}
+              aria-label={`Filter by ${cat} — ${total} project${total !== 1 ? 's' : ''}`}
+              className={[
+                'relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold',
+                'transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-black',
+                'backdrop-blur-sm border',
+                isActive
+                  ? `${tokens.activeBg} ${tokens.activeBorder} ${tokens.text} shadow-[0_2px_16px_rgba(0,0,0,0.3)]`
+                  : 'bg-white/[0.04] border-white/[0.07] text-white/45 hover:bg-white/[0.08] hover:text-white/70 hover:border-white/15',
+              ].join(' ')}
             >
-              {/* Category Icon */}
-              <span className="text-xl mr-3" role="img" aria-hidden="true">
-                {getCategoryIcon(category)}
+              {/* Active dot */}
+              {isActive && (
+                <span className={`w-1.5 h-1.5 rounded-full ${tokens.dot} shadow-[0_0_6px_currentColor] flex-shrink-0`} />
+              )}
+
+              {/* Emoji */}
+              <span className="text-base leading-none" aria-hidden="true">
+                {CATEGORY_EMOJI[cat] ?? '💡'}
               </span>
-              
-              {/* Category Name */}
-              <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium">{category}</span>
-              
-              {/* Count Badge */}
-              <span className={`
-                ml-4 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.3)]
-                ${isActive
-                  ? 'bg-white/25 text-white border border-white/30'
-                  : 'bg-slate-800/60 text-slate-200 border border-slate-600/40 group-hover:bg-blue-600/30 group-hover:text-blue-100 group-hover:border-blue-400/50'
-                }
-              `}>
+
+              {/* Label */}
+              <span>{cat}</span>
+
+              {/* Count badge */}
+              <span
+                className={[
+                  'ml-0.5 px-2 py-0.5 rounded-md text-[11px] font-bold tabular-nums',
+                  isActive
+                    ? 'bg-white/15 text-white/90'
+                    : 'bg-white/[0.06] text-white/30',
+                ].join(' ')}
+              >
                 {total}
               </span>
-              
-              {/* Featured Indicator */}
-              {featured > 0 && (
-                <div className={`
-                  ml-2 flex items-center px-2 py-1 rounded-lg backdrop-blur-sm
-                  ${isActive 
-                    ? 'text-yellow-200 bg-yellow-400/20 border border-yellow-300/30' 
-                    : 'text-yellow-400 bg-yellow-500/10 border border-yellow-400/20'
-                  }
-                `}>
-                  <Sparkles className="h-3 w-3" />
-                  <span className="text-xs font-semibold ml-1">{featured}</span>
-                </div>
+
+              {/* Featured star */}
+              {feat > 0 && (
+                <span className="flex items-center gap-0.5 text-amber-400 text-[11px] font-bold">
+                  <Star className="h-3 w-3 fill-amber-400" />{feat}
+                </span>
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Active Filter Summary */}
+      {/* Result summary */}
       {selectedCategory !== 'All' && (
-        <div className="text-center mt-6">
-          <p className="text-sm text-blue-200/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-            Showing <span className="font-semibold text-blue-300">{getCategoryCount(selectedCategory).total}</span> projects in{' '}
-            <span className="font-semibold text-white">{selectedCategory}</span>
-            {getCategoryCount(selectedCategory).featured > 0 && (
-              <span className="text-yellow-400">
-                {' '}• {getCategoryCount(selectedCategory).featured} featured
-              </span>
-            )}
-          </p>
-        </div>
+        <p className="text-center text-[13px] text-white/35 mt-5">
+          Showing{' '}
+          <span className="text-white/60 font-semibold">{counts[selectedCategory] ?? 0}</span>{' '}
+          project{(counts[selectedCategory] ?? 0) !== 1 ? 's' : ''} in{' '}
+          <span className={`font-semibold ${CATEGORY_TOKENS[selectedCategory]?.text ?? 'text-white'}`}>
+            {selectedCategory}
+          </span>
+          {(featuredCounts[selectedCategory] ?? 0) > 0 && (
+            <span className="text-amber-400"> · {featuredCounts[selectedCategory]} featured</span>
+          )}
+        </p>
       )}
     </div>
   );

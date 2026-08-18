@@ -1,5 +1,5 @@
-import React from 'react';
-import { ExternalLink, Github, Calendar, Tag, ArrowUpRight, Clock, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Github, ArrowUpRight, CheckCircle, Clock, Star, Layers } from 'lucide-react';
 
 interface Project {
   _id: string;
@@ -21,267 +21,249 @@ interface ProjectCardProps {
   project: Project;
 }
 
+/* ─── Per-category design tokens ─────────────────────────────── */
+const CAT: Record<string, {
+  pill: string;         // badge classes
+  bar: string;          // top bar gradient
+  glowColor: string;    // raw rgba for JS shadows
+  dot: string;          // footer dot color
+  imgOverlay: string;   // image hover tint
+}> = {
+  'AI/ML':            { pill:'text-violet-300 bg-violet-500/10 border-violet-500/20', bar:'from-violet-500 via-purple-500 to-indigo-500', glowColor:'139,92,246',  dot:'bg-violet-400', imgOverlay:'rgba(139,92,246,0.18)' },
+  'Web Development':  { pill:'text-cyan-300   bg-cyan-500/10   border-cyan-500/20',   bar:'from-cyan-400  via-blue-400   to-indigo-500', glowColor:'34,211,238',   dot:'bg-cyan-400',   imgOverlay:'rgba(34,211,238,0.15)' },
+  'Mobile App':       { pill:'text-emerald-300 bg-emerald-500/10 border-emerald-500/20', bar:'from-emerald-400 via-green-400 to-teal-500', glowColor:'52,211,153',  dot:'bg-emerald-400', imgOverlay:'rgba(52,211,153,0.15)' },
+  'Data Science':     { pill:'text-pink-300   bg-pink-500/10   border-pink-500/20',   bar:'from-pink-400  via-rose-400   to-purple-500', glowColor:'244,114,182', dot:'bg-pink-400',   imgOverlay:'rgba(244,114,182,0.15)' },
+  'IoT':              { pill:'text-orange-300 bg-orange-500/10 border-orange-500/20', bar:'from-orange-400 via-amber-400  to-red-500',   glowColor:'251,146,60',  dot:'bg-orange-400', imgOverlay:'rgba(251,146,60,0.15)' },
+  'Blockchain':       { pill:'text-yellow-300 bg-yellow-500/10 border-yellow-500/20', bar:'from-yellow-400 via-amber-400  to-orange-500',glowColor:'234,179,8',   dot:'bg-yellow-400', imgOverlay:'rgba(234,179,8,0.13)' },
+  'default':          { pill:'text-blue-300   bg-blue-500/10   border-blue-500/20',   bar:'from-blue-400  via-cyan-400   to-indigo-500',glowColor:'59,130,246',   dot:'bg-blue-400',   imgOverlay:'rgba(59,130,246,0.15)' },
+};
+
+const STATUS: Record<string, { label: string; icon: React.ReactNode; cls: string; pulse: boolean }> = {
+  'Completed':  { label:'Completed',   icon:<CheckCircle className="h-3 w-3"/>, cls:'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', pulse:false },
+  'In Progress':{ label:'In Progress', icon:<Clock        className="h-3 w-3"/>, cls:'text-sky-400    bg-sky-500/10     border-sky-500/20',     pulse:true  },
+  'On Hold':    { label:'On Hold',     icon:<Clock        className="h-3 w-3"/>, cls:'text-amber-400  bg-amber-500/10   border-amber-500/20',   pulse:false },
+  'Planning':   { label:'Planning',    icon:<Clock        className="h-3 w-3"/>, cls:'text-purple-400 bg-purple-500/10  border-purple-500/20',  pulse:false },
+};
+
+const FALLBACK = 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=800&q=80';
+
+/* ─── Card ─────────────────────────────────────────────────────── */
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  const {
-    title,
-    shortDescription,
-    technologies,
-    category,
-    status,
-    imageUrl,
-    githubUrl,
-    liveUrl,
-    startDate,
-    tags
-  } = project;
+  const { title, shortDescription, technologies, category, status,
+          imageUrl, githubUrl, liveUrl, featured, startDate } = project;
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case 'Completed':
-        return {
-          color: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
-          icon: <CheckCircle className="h-3 w-3" />,
-          pulse: false
-        };
-      case 'In Progress':
-        return {
-          color: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
-          icon: <Clock className="h-3 w-3" />,
-          pulse: true
-        };
-      case 'On Hold':
-        return {
-          color: 'bg-amber-500/20 text-amber-300 border-amber-400/30',
-          icon: <Clock className="h-3 w-3" />,
-          pulse: false
-        };
-      case 'Planning':
-        return {
-          color: 'bg-purple-500/20 text-purple-300 border-purple-400/30',
-          icon: <Clock className="h-3 w-3" />,
-          pulse: false
-        };
-      default:
-        return {
-          color: 'bg-slate-500/20 text-slate-300 border-slate-400/30',
-          icon: <Clock className="h-3 w-3" />,
-          pulse: false
-        };
-    }
-  };
+  const [imgErr, setImgErr] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
-  const getCategoryConfig = (category: string) => {
-    switch (category) {
-      case 'AI/ML':
-        return { color: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/30', gradient: 'from-indigo-500 to-purple-600' };
-      case 'Web Development':
-        return { color: 'bg-blue-500/20 text-blue-300 border-blue-400/30', gradient: 'from-blue-500 to-cyan-600' };
-      case 'Mobile App':
-        return { color: 'bg-green-500/20 text-green-300 border-green-400/30', gradient: 'from-green-500 to-emerald-600' };
-      case 'Data Science':
-        return { color: 'bg-purple-500/20 text-purple-300 border-purple-400/30', gradient: 'from-purple-500 to-pink-600' };
-      case 'IoT':
-        return { color: 'bg-orange-500/20 text-orange-300 border-orange-400/30', gradient: 'from-orange-500 to-red-600' };
-      case 'Blockchain':
-        return { color: 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30', gradient: 'from-yellow-500 to-orange-600' };
-      case 'storage':
-        return { color: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/30', gradient: 'from-cyan-500 to-blue-600' };
-      default:
-        return { color: 'bg-slate-500/20 text-slate-300 border-slate-400/30', gradient: 'from-slate-500 to-slate-600' };
-    }
-  };
+  const c   = CAT[category]  ?? CAT['default'];
+  const s   = STATUS[status] ?? { label: status, icon: <Clock className="h-3 w-3"/>, cls: 'text-slate-400 bg-slate-500/10 border-slate-500/20', pulse: false };
 
-  const statusConfig = getStatusConfig(status);
-  const categoryConfig = getCategoryConfig(category);
+  const src = imgErr || !imageUrl
+    ? FALLBACK
+    : imageUrl.startsWith('http')  ? imageUrl
+    : imageUrl.startsWith('/')     ? `http://localhost:5000${imageUrl}`
+    : FALLBACK;
+
+  const dateStr = new Date(startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
-    <article 
-      className="group relative bg-gradient-to-br from-slate-900/95 via-blue-950/90 to-slate-800/95 backdrop-blur-xl rounded-3xl shadow-[0_32px_64px_rgba(0,0,0,0.9),0_16px_32px_rgba(30,58,138,0.4),0_8px_16px_rgba(59,130,246,0.3),0_4px_8px_rgba(6,182,212,0.2),inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(59,130,246,0.2)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.95),0_20px_40px_rgba(30,58,138,0.5),0_10px_20px_rgba(59,130,246,0.4),0_5px_10px_rgba(6,182,212,0.3),inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(59,130,246,0.3)] transition-shadow duration-300 overflow-hidden border-2 border-blue-400/30 hover:border-blue-300/50 focus-within:ring-2 focus-within:ring-blue-400 focus-within:ring-offset-2 focus-within:ring-offset-slate-900"
-      role="article"
-      aria-labelledby={`project-title-${project._id}`}
+    <article
+      className="group relative flex flex-col h-full rounded-3xl overflow-hidden cursor-pointer select-none
+                 transition-all duration-500 ease-out
+                 hover:-translate-y-1.5 focus-within:outline-none"
+      style={{
+        background: 'linear-gradient(160deg, rgba(13,19,38,0.98) 0%, rgba(6,10,22,1) 100%)',
+        boxShadow: hovered
+          ? `0 0 0 1px rgba(${c.glowColor},0.35), 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(${c.glowColor},0.12)`
+          : '0 0 0 1px rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.4)',
+        transition: 'box-shadow 0.45s ease, transform 0.45s ease',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       tabIndex={0}
+      aria-labelledby={`title-${project._id}`}
     >
-      
 
-      {/* Project Image with Overlay */}
-      <div className="relative h-40 bg-gradient-to-br from-slate-800 via-blue-900 to-slate-700 overflow-hidden rounded-t-3xl" role="img" aria-label={`${title} project preview`}>
-        {imageUrl ? (
-          <>
-            <img
-              src={imageUrl.startsWith('http') ? imageUrl : imageUrl.startsWith('/') ? `http://localhost:5000${imageUrl}` : `https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80`}
-              alt={`${title} project screenshot`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                // Fallback to a default tech image if image fails to load
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center relative" aria-label={`${title} project placeholder`}>
-            {/* Default tech background image */}
-            <img
-              src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-              alt={`${title} project background`}
-              className="w-full h-full object-cover opacity-40"
-              loading="lazy"
-            />
-            <div className={`absolute text-7xl font-bold bg-gradient-to-r ${categoryConfig.gradient} bg-clip-text text-transparent opacity-80 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]`}>
-              {title.charAt(0).toUpperCase()}
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent"></div>
+      {/* ── Animated top accent bar ── */}
+      <div
+        className={`absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r ${c.bar} z-30 rounded-t-3xl
+                    origin-left transition-transform duration-500 ease-out
+                    ${hovered ? 'scale-x-100' : 'scale-x-0'}`}
+      />
+
+      {/* ── Hero image ── */}
+      <div className="relative h-52 overflow-hidden flex-shrink-0">
+
+        {/* Image */}
+        <img
+          src={src}
+          alt={title}
+          onError={() => setImgErr(true)}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover
+                     transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+
+        {/* Always-on scrim */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#060a16] via-[#060a1680] to-transparent" />
+
+        {/* Category-colour wash on hover */}
+        <div
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{ background: c.imgOverlay, opacity: hovered ? 1 : 0 }}
+        />
+
+        {/* ── Featured badge ── */}
+        {featured && (
+          <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-1.5
+                          px-2.5 py-1 rounded-full
+                          bg-amber-500/20 border border-amber-400/30 backdrop-blur-xl">
+            <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
+            <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">Featured</span>
           </div>
         )}
-        
-        {/* Quick Action Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100" role="toolbar" aria-label="Project quick actions">
-          <div className="flex space-x-4">
-            {liveUrl && (
-              <a
-                href={liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-white/95 backdrop-blur-sm text-slate-900 rounded-full hover:bg-white transition-colors duration-200 shadow-[0_8px_16px_rgba(0,0,0,0.4)] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-black"
-                aria-label={`View live demo of ${title}`}
-                tabIndex={0}
-              >
-                <ExternalLink className="h-5 w-5" />
-              </a>
-            )}
-            {githubUrl && (
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-white/95 backdrop-blur-sm text-slate-900 rounded-full hover:bg-white transition-colors duration-200 shadow-[0_8px_16px_rgba(0,0,0,0.4)] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-black"
-                aria-label={`View source code of ${title}`}
-                tabIndex={0}
-              >
-                <Github className="h-5 w-5" />
-              </a>
-            )}
-          </div>
+
+        {/* ── Status badge ── */}
+        <div className={`absolute ${featured ? 'top-3.5 right-3.5' : 'top-3.5 right-3.5'} z-10
+                         flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl
+                         border text-[10px] font-bold uppercase tracking-wider
+                         backdrop-blur-xl ${s.cls}`}>
+          <span className={s.pulse ? 'animate-pulse' : ''}>{s.icon}</span>
+          {s.label}
+        </div>
+
+        {/* ── CTA hover overlay ── */}
+        <div
+          className={`absolute inset-0 z-10 flex items-end pb-5 justify-center gap-3
+                       transition-opacity duration-350 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+          style={{ backdropFilter: hovered ? 'blur(3px)' : 'none', background: hovered ? 'rgba(0,0,0,0.45)' : 'transparent' }}
+        >
+          {liveUrl && (
+            <a href={liveUrl} target="_blank" rel="noopener noreferrer"
+               onClick={e => e.stopPropagation()}
+               className={`flex items-center gap-2 px-5 py-2.5 rounded-full
+                           bg-gradient-to-r ${c.bar} text-white text-[12px] font-bold
+                           shadow-xl hover:scale-105 hover:brightness-110
+                           transition-all duration-200`}>
+              <ExternalLink className="h-3.5 w-3.5" /> Live Demo
+            </a>
+          )}
+          {githubUrl && (
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+               onClick={e => e.stopPropagation()}
+               className="flex items-center gap-2 px-5 py-2.5 rounded-full
+                          bg-white/10 border border-white/25 text-white text-[12px] font-semibold
+                          hover:bg-white/20 hover:scale-105 backdrop-blur-sm
+                          transition-all duration-200">
+              <Github className="h-3.5 w-3.5" /> Source
+            </a>
+          )}
         </div>
       </div>
 
-      {/* Project Content */}
-      <div className="p-4" role="main">
-        {/* Header with Category and Status */}
-        <div className="flex items-center justify-between mb-4" role="group" aria-label="Project metadata">
-          <span 
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${categoryConfig.color} border`}
-            role="badge"
-            aria-label={`Category: ${category}`}
-          >
+      {/* ── Body ── */}
+      <div className="flex flex-col flex-1 px-6 pt-5 pb-6 gap-3.5">
+
+        {/* Category + date */}
+        <div className="flex items-center justify-between">
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg
+                            border text-[10px] font-black uppercase tracking-widest ${c.pill}`}>
+            <Layers className="h-3 w-3" />
             {category}
           </span>
-          <div 
-            className={`flex items-center px-2 py-1 rounded-full text-xs font-medium border ${statusConfig.color} ${statusConfig.pulse ? 'animate-pulse' : ''}`}
-            role="status"
-            aria-label={`Project status: ${status}`}
-          >
-            {statusConfig.icon}
-            <span className="ml-1">{status}</span>
-          </div>
+          <time className="text-[11px] text-white/50 font-medium tabular-nums">{dateStr}</time>
         </div>
 
-        {/* Project Title */}
-        <h3 
-          id={`project-title-${project._id}`}
-          className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors duration-300 mb-3 line-clamp-2 leading-tight focus:outline-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-          tabIndex={0}
+        {/* Title */}
+        <h3
+          id={`title-${project._id}`}
+          className="text-[1.15rem] font-extrabold text-white leading-snug tracking-tight
+                     line-clamp-2 group-hover:text-white transition-colors duration-300"
         >
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-blue-200/80 text-sm leading-relaxed mb-4 line-clamp-3 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" role="doc-subtitle">
+        <p className="text-[0.85rem] text-blue-100/70 leading-relaxed line-clamp-2
+                      group-hover:text-blue-100/90 transition-colors duration-300">
           {shortDescription}
         </p>
 
-        {/* Technologies */}
-        {technologies && technologies.length > 0 && (
-          <div className="mb-6" role="group" aria-label="Technologies used">
-            <span className="sr-only">Technologies used in this project:</span>
-            <div className="flex flex-wrap gap-2">
-              {technologies.slice(0, 4).map((tech, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-slate-800/80 to-slate-700/80 text-slate-200 text-xs font-medium rounded-lg border border-slate-600/40 hover:border-slate-500/60 transition-colors duration-200 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.3)]"
-                  role="badge"
-                  aria-label={`Technology: ${tech}`}
-                >
-                  {tech}
-                </span>
-              ))}
-              {technologies.length > 4 && (
-                <span 
-                  className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-600/30 to-blue-500/30 text-blue-200 text-xs font-semibold rounded-lg border border-blue-400/40 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.3)]"
-                  role="badge"
-                  aria-label={`${technologies.length - 4} additional technologies`}
-                >
-                  +{technologies.length - 4} more
-                </span>
-              )}
-            </div>
+        {/* Tech stack */}
+        {technologies?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-0.5">
+            {technologies.slice(0, 5).map((t, i) => (
+              <span key={i}
+                className="px-2.5 py-1 text-[11px] font-semibold rounded-md
+                           text-blue-200/80 border border-blue-400/15 bg-blue-400/[0.06]
+                           hover:text-white hover:border-blue-400/30 hover:bg-blue-400/[0.12]
+                           transition-all duration-200 cursor-default">
+                {t}
+              </span>
+            ))}
+            {technologies.length > 5 && (
+              <span className="px-2 py-1 text-[11px] text-blue-300/50 font-medium">
+                +{technologies.length - 5}
+              </span>
+            )}
           </div>
         )}
 
-        {/* Tags */}
-        {tags && tags.length > 0 && (
-          <div className="mb-6" role="group" aria-label="Project tags">
-            <div className="flex items-center gap-2 text-xs text-blue-300/80">
-              <Tag className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-              <span className="sr-only">Tags:</span>
-              <span className="truncate font-medium">
-                {tags.slice(0, 3).join(' • ')}
-                {tags.length > 3 && ' • ...'}
-              </span>
-            </div>
-          </div>
-        )}
+        {/* Spacer */}
+        <div className="flex-1 min-h-[8px]" />
 
         {/* Footer */}
-        <footer className="flex items-center justify-between pt-6 border-t border-blue-500/30" role="contentinfo">
-          {/* Date */}
-          <div className="flex items-center text-sm text-blue-300/80 font-medium" role="group" aria-label="Project date">
-            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" aria-hidden="true" />
-            <time dateTime={startDate}>
-              {new Date(startDate).toLocaleDateString('en-US', { 
-                month: 'short', 
-                year: 'numeric' 
-              })}
-            </time>
+        <div className="flex items-center justify-between pt-4"
+             style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+
+          {/* Left — glowing dot + label */}
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full flex-shrink-0 ${c.dot}`}
+              style={{ boxShadow: `0 0 8px rgba(${c.glowColor},0.8)` }}
+            />
+            {featured
+              ? <span className="text-[11px] text-amber-400 font-bold flex items-center gap-1">
+                  <Star className="h-3 w-3 fill-amber-400" /> Featured
+                </span>
+              : <span className="text-[11px] text-white/50 uppercase tracking-wider font-semibold">{category}</span>
+            }
           </div>
 
-          {/* Action Links */}
-          <nav className="flex items-center gap-3" role="navigation" aria-label="Project links">
+          {/* Right — action links */}
+          <div className="flex items-center gap-1">
             {githubUrl && (
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 text-blue-300/80 hover:text-white hover:bg-slate-700/60 rounded-xl transition-colors duration-200 shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.4)] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-                aria-label={`View ${title} source code`}
-              >
+              <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+                 className="p-2 rounded-xl text-blue-300/60 hover:text-cyan-400 hover:bg-cyan-400/10
+                            transition-all duration-200"
+                 aria-label={`GitHub – ${title}`}>
                 <Github className="h-4 w-4" />
               </a>
             )}
-            {liveUrl && (
-              <a
-                href={liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 text-blue-300/80 hover:text-blue-200 hover:bg-blue-500/30 rounded-xl transition-colors duration-200 shadow-[0_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_8px_rgba(59,130,246,0.2)] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-                aria-label={`View ${title} live demo`}
-              >
-                <ArrowUpRight className="h-4 w-4" />
+
+            {/* Primary CTA */}
+            {liveUrl ? (
+              <a href={liveUrl} target="_blank" rel="noopener noreferrer"
+                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl
+                             bg-gradient-to-r ${c.bar} text-white text-[12px] font-bold
+                             hover:opacity-90 hover:scale-105 transition-all duration-200`}
+                 style={{ boxShadow: `0 4px 16px rgba(${c.glowColor},0.35)` }}
+                 aria-label={`Visit ${title}`}>
+                View <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
-            )}
-          </nav>
-        </footer>
+            ) : githubUrl ? (
+              <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+                 className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl
+                            text-blue-200/80 text-[12px] font-semibold
+                            border border-blue-400/20 bg-blue-400/[0.06]
+                            hover:text-white hover:bg-blue-400/15
+                            transition-all duration-200"
+                 aria-label={`Code – ${title}`}>
+                Code <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            ) : null}
+          </div>
+        </div>
       </div>
     </article>
   );

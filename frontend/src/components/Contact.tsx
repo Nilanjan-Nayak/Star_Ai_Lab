@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, MessageCircle } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
 
 const Contact = () => {
+  const { getContent } = useContent();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +13,8 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+
+  const contactEmail = getContent('contact', 'email', 'info@starailabs.com');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -68,8 +72,8 @@ const Contact = () => {
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email Us",
-      content: "info@starailabs.com",
-      link: "mailto:info@starailabs.com"
+      content: contactEmail,
+      link: `mailto:${contactEmail}`
     },
     {
       icon: <Phone className="h-6 w-6" />,
@@ -118,16 +122,16 @@ const Contact = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-6 py-3 bg-premium-glass border border-premium-blue rounded-full text-blue-300 text-sm font-medium mb-6 backdrop-blur-lg">
+          <div className="inline-flex items-center px-6 py-3 bg-premium-glass border border-premium-blue rounded-full text-blue-300 text-sm font-medium mb-6 backdrop-blur-lg hover:bg-blue-500/20 transition-colors duration-300">
             <MessageCircle className="h-4 w-4 mr-2" />
-            Get In Touch
+            {getContent('contact', 'title', 'Get in Touch')}
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
             Let's Build Something
-            <span className="text-premium-gradient"> Amazing Together</span>
+            <span className="text-premium-gradient block md:inline"> Extraordinary Together</span>
           </h2>
-          <p className="text-xl text-blue-200/90 max-w-3xl mx-auto">
-            Ready to transform your ideas into intelligent solutions? We'd love to hear about your project and explore how we can help bring your vision to life.
+          <p className="text-xl text-blue-200/90 max-w-3xl mx-auto leading-relaxed">
+            {getContent('contact', 'subtitle', "Have a project in mind? Let's collaborate and build something amazing together.")}
           </p>
         </div>
 

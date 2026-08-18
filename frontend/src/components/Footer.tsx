@@ -1,6 +1,9 @@
-import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
 
 const Footer = () => {
+  const { getContent } = useContent();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -35,6 +38,12 @@ const Footer = () => {
 
   const socialLinks = [
     {
+      icon: <Globe className="h-5 w-5" />,
+      href: 'https://nilanjan-nayak.my-board.org',
+      name: 'Website',
+      hover: 'hover:text-cyan-400 hover:bg-cyan-500/20'
+    },
+    {
       icon: <Github className="h-5 w-5" />,
       href: 'https://github.com/Nilanjan-Nayak',
       name: 'GitHub',
@@ -42,7 +51,7 @@ const Footer = () => {
     },
     {
       icon: <Linkedin className="h-5 w-5" />,
-      href: 'https://linkedin.com',
+      href: 'https://www.linkedin.com/in/nilanjan-nayak-73b475322/',
       name: 'LinkedIn',
       hover: 'hover:text-blue-400 hover:bg-blue-500/20'
     },
@@ -54,7 +63,7 @@ const Footer = () => {
     },
     {
       icon: <Mail className="h-5 w-5" />,
-      href: 'mailto:info@starailabs.com',
+      href: 'mailto:nayaknilanjan2@gmail.com',
       name: 'Email',
       hover: 'hover:text-blue-400 hover:bg-blue-500/20'
     }
@@ -71,7 +80,29 @@ const Footer = () => {
       {/* Main Footer Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          
+          {/* Brand & Social Section */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl font-bold text-premium-gradient">Star AI Lab</span>
+            </div>
+            <p className="text-blue-200/80 max-w-sm">
+              Empowering the future with cutting-edge artificial intelligence and innovative software solutions.
+            </p>
+            <div className="flex space-x-3 pt-2">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`p-2.5 rounded-lg bg-white/5 border border-white/10 ${social.hover} transition-all duration-300 transform hover:scale-110`}
+                  title={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+          </div>
 
           {/* Company Links */}
           <div>
@@ -140,7 +171,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center text-blue-200/80 mb-4 md:mb-0">
-              <span>© 2024 Star AI Labs. Made with</span>
+              <span>{getContent('footer', 'copyright', '© 2024 Star AI Labs. Made with')}</span>
               <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
               <span> Nilanjan</span>
             </div>

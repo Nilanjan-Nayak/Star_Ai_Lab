@@ -1,233 +1,371 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Menu, X, Github, Linkedin, Mail, Sparkles, ArrowUpRight, ChevronRight, Globe, Layers, User, Send, Home as HomeIcon } from 'lucide-react';
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+export type SectionId = 'home' | 'about' | 'projects' | 'contact';
 
-  // Track scroll position for smooth transitions
+export interface NavLinkItem {
+  id: SectionId;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+export interface SocialButtonProps {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  ariaLabel?: string;
+}
+
+const navLinks: NavLinkItem[] = [
+  { id: 'home', label: 'Home', icon: HomeIcon },
+  { id: 'about', label: 'About', icon: User },
+  { id: 'projects', label: 'Projects', icon: Layers },
+  { id: 'contact', label: 'Contact', icon: Send },
+];
+
+const Navbar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [scrollY, setScrollY] = useState<number>(0);
+  const [activeSection, setActiveSection] = useState<SectionId>('home');
+  const [sliderStyle, setSliderStyle] = useState<{ left: number; width: number; opacity: number }>({
+    left: 0,
+    width: 0,
+    opacity: 0,
+  });
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const buttonRefs = useRef<{ [key in SectionId]?: HTMLButtonElement | null }>({});
+
+  // Accurate section detection using scroll tracking
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const currentScrollY = window.scrollY;
+      setScrollY(currentScrollY);
+
+      // Section spy calculation with proportional viewport buffer
+      const sections: SectionId[] = ['home', 'about', 'projects', 'contact'];
+      const scrollPosition = currentScrollY + Math.min(window.innerHeight * 0.35, 260);
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const sectionId = sections[i];
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          if (scrollPosition >= top) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  // Update sliding magnetic active pill position with zero layout shift
+  const updateSlider = useCallback(() => {
+    const currentBtn = buttonRefs.current[activeSection];
+    const navEl = navRef.current;
+    if (currentBtn && navEl) {
+      const navRect = navEl.getBoundingClientRect();
+      const btnRect = currentBtn.getBoundingClientRect();
+      setSliderStyle({
+        left: btnRect.left - navRect.left,
+        width: btnRect.width,
+        opacity: 1,
+      });
+    }
+  }, [activeSection]);
 
-  const scrollToSection = (sectionId: string) => {
+  useEffect(() => {
+    updateSlider();
+    window.addEventListener('resize', updateSlider);
+    return () => window.removeEventListener('resize', updateSlider);
+  }, [updateSlider]);
+
+  // Close mobile drawer on resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile drawer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  const scrollToSection = useCallback((sectionId: SectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
       setIsOpen(false);
     }
-  };
+  }, []);
 
-  // Smart navbar visibility and background transitions
-  const isInHeroSection = scrollY < 80;
-  const isScrolled = scrollY > 50;
-  const backgroundOpacity = Math.min(Math.max((scrollY - 30) / 120, 0), 1);
-  const borderOpacity = Math.min(Math.max((scrollY - 50) / 100, 0), 1);
-  const shadowIntensity = Math.min(scrollY / 200, 1);
-  const scrollProgress = Math.min(scrollY / (window.innerHeight || 1), 1);
-
-  // Dynamic navbar styles with premium transitions
-  const navbarStyle = {
-    background: isInHeroSection 
-      ? 'transparent'
-      : `linear-gradient(135deg, rgba(15, 23, 42, ${0.95 * backgroundOpacity}), rgba(30, 41, 59, ${0.90 * backgroundOpacity}), rgba(51, 65, 85, ${0.85 * backgroundOpacity}))`,
-    backdropFilter: isInHeroSection ? 'none' : `blur(${12 + (backgroundOpacity * 12)}px) saturate(${100 + (backgroundOpacity * 80)}%)`,
-    WebkitBackdropFilter: isInHeroSection ? 'none' : `blur(${12 + (backgroundOpacity * 12)}px) saturate(${100 + (backgroundOpacity * 80)}%)`,
-    borderBottom: `1px solid rgba(34, 211, 238, ${0.2 * borderOpacity})`,
-    boxShadow: isInHeroSection 
-      ? 'none' 
-      : `0 ${4 + (shadowIntensity * 16)}px ${16 + (shadowIntensity * 24)}px rgba(0, 0, 0, ${0.1 + (shadowIntensity * 0.4)}), 0 0 ${20 * shadowIntensity}px rgba(59, 130, 246, ${0.1 * shadowIntensity})`,
-    transition: 'all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  };
-
-  // Smart text color transitions
-  const getTextColorClass = (isActive = false) => {
-    if (isInHeroSection) {
-      return isActive 
-        ? 'text-white drop-shadow-lg' 
-        : 'text-white/90 hover:text-cyan-300 hover:drop-shadow-lg';
-    }
-    return isActive 
-      ? 'text-white' 
-      : 'text-cyan-200 hover:text-white';
-  };
-
-  // Logo styles with smart transitions
-  const logoImageStyle = {
-    borderColor: isInHeroSection 
-      ? `rgba(59, 130, 246, ${0.6 + (0.4 * (1 - backgroundOpacity))})` 
-      : `rgba(59, 130, 246, ${0.4 + (0.3 * backgroundOpacity)})`,
-    background: isInHeroSection 
-      ? `rgba(255, 255, 255, ${0.15 - (0.05 * backgroundOpacity)})` 
-      : `rgba(255, 255, 255, ${0.1 + (0.05 * backgroundOpacity)})`,
-    boxShadow: isInHeroSection 
-      ? `0 0 ${10 + (10 * (1 - backgroundOpacity))}px rgba(59, 130, 246, ${0.3 * (1 - backgroundOpacity)})` 
-      : `0 0 ${5 + (5 * backgroundOpacity)}px rgba(59, 130, 246, ${0.2 * backgroundOpacity})`,
-    transition: 'all 0.5s ease-out',
-  };
-
-  // Mobile menu background
-  const mobileMenuStyle = {
-    background: `linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95))`,
-    backdropFilter: 'blur(20px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-  };
+  const isScrolled = scrollY > 30;
+  const scrollProgress = Math.min(
+    scrollY / (Math.max(document.documentElement.scrollHeight - window.innerHeight, 1)),
+    1
+  );
 
   return (
-    <nav 
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out"
-      style={navbarStyle}
-    >
-      {/* Scroll progress indicator */}
-      <div 
-        className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ease-out"
-        style={{ 
-          width: `${scrollProgress * 100}%`,
-          opacity: isScrolled ? 1 : 0 
-        }}
-      />
-      
-      <div className="relative mx-4 px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Professional Logo with Simple Transitions */}
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pointer-events-none">
+      <div className="w-full max-w-[96%] xl:max-w-[1400px] 2xl:max-w-7xl mx-auto">
+        {/* ── Main Navigation Capsule ── */}
+        <div
+          ref={navContainerRef}
+          className={`w-full rounded-2xl lg:rounded-full pointer-events-auto transition-all duration-500 ease-out relative ${isScrolled
+            ? 'bg-[#030712]/92 backdrop-blur-2xl border border-cyan-500/25 shadow-[0_12px_45px_rgba(0,0,0,0.85),0_0_35px_rgba(34,211,238,0.15)]'
+            : 'bg-slate-950/50 backdrop-blur-md border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)]'
+            }`}
+        >
+          {/* Top Specular Edge Highlight */}
           <div
-            className="flex items-center cursor-pointer"
-            onClick={() => scrollToSection("home")}
-          >
-            <span className={`font-bold text-2xl leading-tight transition-colors duration-300 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent`}>
-              Star AI Lab
-            </span>
-            
-          </div>
+            className={`absolute inset-x-8 sm:inset-x-16 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent pointer-events-none rounded-t-full transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-40'
+              }`}
+          />
 
-          {/* Professional Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {['home', 'about', 'projects', 'contact'].map((item) => (
-              <button
-                key={item}
-                onClick={() => scrollToSection(item)}
-                className={`px-4 py-2 transition-colors duration-300 font-medium capitalize ${getTextColorClass()}`}
-              >
-                {item}
-              </button>
-            ))}
-            
-            {/* Professional Social Links */}
-            <div 
-              className="flex items-center space-x-2 pl-6 ml-6 transition-all duration-300"
-              style={{
-                borderLeft: `1px solid rgba(34, 211, 238, ${0.3 * (isInHeroSection ? 0.7 : 1)})`,
+          {/* Dynamic Interactive Scroll Progress Bar */}
+          <div
+            className="absolute bottom-0 left-6 right-6 h-[2px] bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 transition-all duration-200 pointer-events-none rounded-full"
+            style={{
+              width: `${scrollProgress * 100}%`,
+              opacity: isScrolled ? 1 : 0,
+            }}
+          />
+
+          <div className="px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between">
+            {/* ── Left: Brand Identity & Logo ── */}
+            <div
+              onClick={() => scrollToSection('home')}
+              className="flex items-center gap-3 cursor-pointer group select-none flex-shrink-0"
+              role="button"
+              tabIndex={0}
+              aria-label="Star AI Lab Home"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  scrollToSection('home');
+                }
               }}
             >
-              <SocialIcon 
-                href="https://github.com" 
-                icon={<Github className="h-5 w-5" />} 
-                isInHero={isInHeroSection}
-              />
-              <SocialIcon 
-                href="https://linkedin.com" 
-                icon={<Linkedin className="h-5 w-5" />} 
-                isInHero={isInHeroSection}
-              />
-              <SocialIcon 
-                href="mailto:info@example.com" 
-                icon={<Mail className="h-5 w-5" />} 
-                isInHero={isInHeroSection}
-              />
-            </div>
-          </div>
 
-          {/* Professional Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={toggleMenu}
-              className={`p-3 transition-colors duration-300 ${getTextColorClass()}`}
+
+              {/* Brand Text + Studio Status Indicator */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-base sm:text-lg lg:text-xl tracking-tight text-white group-hover:text-cyan-300 transition-colors duration-300">
+                    Star AI Lab
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Center: Fluid Magnetic Sliding Pill Navigation ── */}
+            <nav
+              ref={navRef}
+              className="relative hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+              aria-label="Main Navigation"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Enhanced Mobile Navigation */}
-        {isOpen && (
-          <div 
-            className="md:hidden border-t transition-all duration-500"
-            style={{
-              ...mobileMenuStyle,
-              borderTopColor: `rgba(34, 211, 238, ${0.2 * borderOpacity})`,
-            }}
-          >
-            <div className="py-6 space-y-2">
-              {/* Mobile Logo */}
-              <div className="flex items-center justify-center pb-4 mb-4"
+              {/* The Single Sliding Smooth Pill Indicator (Zero Layout Shift) */}
+              <span
+                className="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-cyan-500/25 via-blue-500/20 to-cyan-500/25 border border-cyan-400/40 shadow-[0_0_18px_rgba(34,211,238,0.25)] pointer-events-none transition-all duration-350 ease-[cubic-bezier(0.25,1,0.5,1)]"
                 style={{
-                  borderBottom: `1px solid rgba(34, 211, 238, ${0.2 * borderOpacity})`,
+                  left: `${sliderStyle.left}px`,
+                  width: `${sliderStyle.width}px`,
+                  opacity: sliderStyle.opacity,
                 }}
-              >
-                <span className="font-bold text-xl leading-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  Star AI Lab
-                </span>
+              />
+
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id;
+
+                return (
+                  <button
+                    key={link.id}
+                    ref={(el) => {
+                      buttonRefs.current[link.id] = el;
+                    }}
+                    onClick={() => scrollToSection(link.id)}
+                    className={`relative z-10 px-4 lg:px-5 py-1.5 rounded-full text-xs lg:text-sm font-medium transition-colors duration-200 select-none flex items-center justify-center ${isActive
+                      ? 'text-cyan-300 font-semibold'
+                      : 'text-slate-300 hover:text-white'
+                      }`}
+                  >
+                    <span>{link.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* ── Right: Social Actions & Primary CTA Button ── */}
+            <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+              {/* Glassmorphic Social Buttons */}
+              <div className="flex items-center gap-1.5">
+                <SocialButton
+                  href="https://nilanjan-nayak.my-board.org"
+                  icon={<Globe className="w-4 h-4" />}
+                  title="Portfolio Website"
+                  ariaLabel="Visit Developer Website"
+                />
+                <SocialButton
+                  href="https://github.com/Nilanjan-Nayak"
+                  icon={<Github className="w-4 h-4" />}
+                  title="GitHub Profile"
+                  ariaLabel="Visit GitHub Profile"
+                />
+                <SocialButton
+                  href="https://www.linkedin.com/in/nilanjan-nayak-73b475322/"
+                  icon={<Linkedin className="w-4 h-4" />}
+                  title="LinkedIn Profile"
+                  ariaLabel="Visit LinkedIn Profile"
+                />
+                <SocialButton
+                  href="mailto:nayaknilanjan2@gmail.com"
+                  icon={<Mail className="w-4 h-4" />}
+                  title="Send Email"
+                  ariaLabel="Send Email"
+                />
               </div>
 
-              {/* Mobile Menu Items */}
-              {['home', 'about', 'projects', 'contact'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item)}
-                  className="group relative block w-full text-left px-6 py-4 text-cyan-200 hover:text-white transition-all duration-300 font-medium"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 mx-2"></div>
-                  <span className="relative z-10 capitalize">{item}</span>
-                </button>
-              ))}
-              
-              {/* Mobile Social Links */}
-              <div 
-                className="flex items-center justify-center space-x-4 pt-6 mt-6"
-                style={{
-                  borderTop: `1px solid rgba(34, 211, 238, ${0.2 * borderOpacity})`,
-                }}
+              {/* Vertical Separator */}
+              <div className="h-5 w-px bg-white/15 mx-1 hidden lg:block" />
+
+              {/* High-Impact CTA Button with Light Sweep Animation */}
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="relative group overflow-hidden px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-300 hover:from-cyan-300 hover:to-blue-400 shadow-[0_0_20px_rgba(34,211,238,0.35)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                aria-label="Get in Touch"
               >
-                <SocialIcon href="https://github.com" icon={<Github className="h-6 w-6" />} mobile />
-                <SocialIcon href="https://linkedin.com" icon={<Linkedin className="h-6 w-6" />} mobile />
-                <SocialIcon href="mailto:info@example.com" icon={<Mail className="h-6 w-6" />} mobile />
-              </div>
+                {/* Light sweep hover effect */}
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+
+                <span className="relative z-10">Get in Touch</span>
+                <ArrowUpRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+              </button>
+            </div>
+
+            {/* ── Mobile: Action & Drawer Toggle ── */}
+            <div className="md:hidden flex items-center gap-2">
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="p-2 rounded-xl bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-xs font-semibold flex items-center gap-1 hover:bg-cyan-500/20 active:scale-95 transition-all"
+                aria-label="Quick contact"
+              >
+                <Mail className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={toggleMenu}
+                className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/90 hover:text-cyan-300 hover:bg-cyan-500/10 hover:border-cyan-400/30 active:scale-95 transition-all duration-200"
+                aria-label="Toggle navigation menu"
+                aria-expanded={isOpen}
+              >
+                {isOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
-        )}
+
+          {/* ── Mobile Dropdown Drawer with Smooth Glassmorphism ── */}
+          {isOpen && (
+            <div className="md:hidden px-4 pb-6 pt-3 border-t border-white/10 space-y-4 bg-[#030712]/95 backdrop-blur-2xl rounded-b-2xl animate-fade-in shadow-2xl">
+              <div className="space-y-1 pt-1">
+                {navLinks.map((link) => {
+                  const isActive = activeSection === link.id;
+                  const Icon = link.icon;
+
+                  return (
+                    <button
+                      key={link.id}
+                      onClick={() => scrollToSection(link.id)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
+                        ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 shadow-[0_0_14px_rgba(34,211,238,0.2)]'
+                        : 'bg-white/[0.02] text-slate-300 hover:text-white hover:bg-white/[0.06] border border-white/5'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                        <span>{link.label}</span>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-white/20'}`} />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Mobile CTA Button */}
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="w-full py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.3)] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                <span>Get in Touch</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+
+              {/* Mobile Social Links Bar */}
+              <div className="flex items-center justify-center gap-2.5 pt-3 border-t border-white/10">
+                <SocialButton
+                  href="https://nilanjan-nayak.my-board.org"
+                  icon={<Globe className="w-4 h-4" />}
+                  title="My Website"
+                  ariaLabel="Developer Website"
+                />
+                <SocialButton
+                  href="https://github.com/Nilanjan-Nayak"
+                  icon={<Github className="w-4 h-4" />}
+                  title="GitHub"
+                  ariaLabel="GitHub Profile"
+                />
+                <SocialButton
+                  href="https://www.linkedin.com/in/nilanjan-nayak-73b475322/"
+                  icon={<Linkedin className="w-4 h-4" />}
+                  title="LinkedIn"
+                  ariaLabel="LinkedIn Profile"
+                />
+                <SocialButton
+                  href="mailto:nayaknilanjan2@gmail.com"
+                  icon={<Mail className="w-4 h-4" />}
+                  title="Email"
+                  ariaLabel="Send Email"
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
-// Professional Social Icon Component
-const SocialIcon = ({ 
-  href, 
-  icon, 
-  mobile = false, 
-  isInHero = false 
-}: { 
-  href: string; 
-  icon: React.ReactNode; 
-  mobile?: boolean;
-  isInHero?: boolean;
+// Reusable Glass Social Action Button with Hover Micro-animations
+const SocialButton: React.FC<SocialButtonProps> = ({
+  href,
+  icon,
+  title,
+  ariaLabel,
 }) => (
   <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className={`${mobile ? 'p-4' : 'p-3'} transition-colors duration-300 ${
-      isInHero 
-        ? 'text-white/90 hover:text-cyan-300' 
-        : 'text-cyan-300 hover:text-white'
-    }`}
+    title={title}
+    aria-label={ariaLabel || title}
+    className="p-2 sm:p-2.5 rounded-xl bg-white/[0.04] hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 hover:shadow-[0_0_14px_rgba(34,211,238,0.25)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group relative"
   >
     {icon}
   </a>
