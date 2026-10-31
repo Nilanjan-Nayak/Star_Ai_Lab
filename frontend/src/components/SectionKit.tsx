@@ -245,7 +245,7 @@ export const SectionShell = ({
 }: { children: ReactNode; tone?: Tone; bare?: boolean } & HTMLAttributes<HTMLElement>) => {
     useCosmos();
     return (
-        <section id={id} className={`relative overflow-hidden py-24 sm:py-28 ${className}`} {...rest}>
+        <section id={id} className={`relative overflow-hidden py-24 sm:py-28 scroll-mt-24 ${className}`} {...rest}>
             <div className="pointer-events-none absolute inset-0" aria-hidden="true">
                 {/* soft scrim for legibility – fades to nothing at both edges, so sections melt into each other */}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(2,4,10,0) 0%, rgba(2,4,10,.5) 20%, rgba(2,4,10,.5) 80%, rgba(2,4,10,0) 100%)' }} />
