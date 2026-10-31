@@ -176,7 +176,7 @@ const Navbar: React.FC = () => {
                     <img
                       src={logoImg}
                       alt="Star AI Lab"
-                      className="h-7 sm:h-8 w-auto object-contain pointer-events-none select-none outline-none border-0 ring-0 shadow-none"
+                      className="h-5 sm:h-[22px] w-auto object-contain pointer-events-none select-none outline-none border-0 ring-0 shadow-none"
                       draggable={false}
                     />
                   </div>

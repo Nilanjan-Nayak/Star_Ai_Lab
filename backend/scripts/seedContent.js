@@ -28,10 +28,10 @@ const initialContent = [
   {
     section: 'about', key: 'stats', label: 'Statistics', fieldType: 'array',
     value: [
-      { number: '1+', label: 'Years Experience' },
-      { number: '1+', label: 'AI Models Trained' },
-      { number: '0+', label: 'Industry Partners' },
-      { number: '2+', label: 'Data Points Processed' }
+      { number: '8+', label: 'Competitions & Hackathons' },
+      { number: '6+', label: 'Project Exhibitions' },
+      { number: '12+', label: 'AI Models & Architectures' },
+      { number: '25K+', label: 'Data Points & Inferences' }
     ]
   },
   {
