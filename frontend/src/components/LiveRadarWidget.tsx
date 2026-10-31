@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, ShieldCheck, Activity, Globe, Server, X, ExternalLink, Users } from 'lucide-react';
+import { Radio, ShieldCheck, Activity, Globe, Server, X, Users } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 

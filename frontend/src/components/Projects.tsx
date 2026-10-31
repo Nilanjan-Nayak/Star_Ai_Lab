@@ -3,7 +3,7 @@ import { ProjectContext } from '../context/ProjectContext';
 import ProjectCard from './ProjectCard';
 import ProjectFilter from './ProjectFilter';
 import ProjectDetailModal from './ProjectDetailModal';
-import { isSoloProject } from './projectVisuals';
+import { isSoloProject } from './projectVisuals.tsx';
 import { SectionShell, SectionHeader, Reveal } from './SectionKit.tsx';
 import { Project } from '../types/project';
 import {
@@ -221,14 +221,6 @@ const Stat = ({ value, label }: { value: number; label: string }) => {
   );
 };
 
-const GroupLabel = ({ title, count }: { title: string; count?: number }) => (
-  <div className="mb-5 flex items-center gap-4">
-    <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
-    <span className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
-    {count !== undefined && <span className="text-xs tabular-nums text-slate-500">{count}</span>}
-  </div>
-);
-
 const Projects = () => {
   const { projects, loading, error, fetchProjects } = useContext(ProjectContext);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -350,14 +342,6 @@ const Projects = () => {
       </section>
     );
   }
-
-  const renderCard = (project: Project, horizontal: boolean) => (
-    <ProjectCard
-      project={project}
-      variant={horizontal ? 'horizontal' : 'stacked'}
-      onClick={() => setSelectedProject(project)}
-    />
-  );
 
   /* ── Main render ── */
   return (

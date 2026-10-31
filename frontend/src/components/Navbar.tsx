@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, Github, Linkedin, Mail, Sparkles, ArrowUpRight, ChevronRight, Globe, Layers, User, Send, Home as HomeIcon } from 'lucide-react';
+import { Menu, X, Github, Linkedin, Mail, ArrowUpRight, ChevronRight, Globe, Layers, User, Send, Home as HomeIcon } from 'lucide-react';
 import logoImg from '../img/star_ai_lab_logo.png';
 
 export type SectionId = 'home' | 'about' | 'projects' | 'contact';

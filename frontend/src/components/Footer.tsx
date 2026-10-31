@@ -1,6 +1,6 @@
-import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
-import { Reveal, useCosmos } from './SectionKit';
+import { useCosmos } from './SectionKit';
 
 type FooterLink = { name: string; action?: () => void; href?: string };
 

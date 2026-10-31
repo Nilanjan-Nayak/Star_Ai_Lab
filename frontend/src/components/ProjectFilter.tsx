@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutGrid } from 'lucide-react';
-import { categoryIcon, categoryLabel } from './projectVisuals';
+import { categoryIcon, categoryLabel } from './projectVisuals.tsx';
 
 interface FilterProject {
   category: string;

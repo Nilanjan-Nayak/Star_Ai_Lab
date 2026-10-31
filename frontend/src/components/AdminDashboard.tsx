@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { ProjectContext } from '../context/ProjectContext';
 import AdminNavbar from './AdminNavbar';
 import ProjectManager from './ProjectManager';
 import VisitorAnalyticsDashboard from './VisitorAnalyticsDashboard';
-import { BarChart3, FolderOpen, Users, Settings, Activity } from 'lucide-react';
+import { BarChart3, FolderOpen, Users, Settings } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useContext(AuthContext);

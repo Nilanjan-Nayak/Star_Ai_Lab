@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, Github, Share2, Check, ArrowUpRight } from 'lucide-react';
 import { Project } from '../types/project';
-import { ProjectCover, StatusBadge, categoryIcon, categoryLabel, isSoloProject } from './projectVisuals';
+import { ProjectCover, StatusBadge, categoryIcon, categoryLabel, isSoloProject } from './projectVisuals.tsx';
 
 interface ProjectDetailModalProps {
   project: Project | null;

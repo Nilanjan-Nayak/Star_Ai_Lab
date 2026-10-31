@@ -3,9 +3,9 @@ import {
   LayoutDashboard, FileText, Video, Settings, LogOut, FolderOpen,
   Save, RefreshCw, ChevronRight, Edit3, Trash2, Loader2, Camera, ShieldCheck,
   Plus, X, Star, Upload, Globe, Github as GithubIcon, Tag, Image as ImageIcon,
-  Radio, ShieldAlert, AlertTriangle, Users, MapPin, Eye, Server, Activity,
+  Radio, ShieldAlert, Users, Eye, Server, Activity,
   Calendar, Layers, Sparkles, Send, CheckCircle, Clock, UserPlus,
-  Laptop, Smartphone, Tablet, Search, Play, Zap, Flame, Filter
+  Laptop, Smartphone, Tablet, Search, Zap, Flame, Filter
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';

@@ -10,7 +10,6 @@ export const useScrollTransition = (options: ScrollTransitionOptions = {}) => {
   const {
     targetElementId = 'hero-numeric-element',
     threshold = 0,
-    debounceMs = 16 // ~60fps
   } = options;
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,20 +32,6 @@ export const useScrollTransition = (options: ScrollTransitionOptions = {}) => {
       setIsTargetAtTop(isAtTop);
     }
   }, [targetElementId, threshold]);
-
-  // Debounce function
-  const debounce = useCallback((func: () => void, delay: number) => {
-    let timeoutId: number;
-    return () => {
-      clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(func, delay);
-    };
-  }, []);
-
-  const debouncedHandleScroll = useCallback(
-    debounce(handleScroll, debounceMs),
-    [handleScroll, debounceMs]
-  );
 
   useEffect(() => {
     // Use requestAnimationFrame for smooth performance

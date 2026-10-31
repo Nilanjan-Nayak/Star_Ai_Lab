@@ -4,8 +4,7 @@ import {
   Globe, 
   Smartphone, 
   Monitor, 
-  Tablet, 
-  Chrome,
+  Tablet,
   RefreshCw,
   TrendingUp,
   Clock,
@@ -359,7 +358,7 @@ const VisitorAnalyticsDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentVisitors.slice(0, 10).map((visitor, index) => (
+                  {recentVisitors.slice(0, 10).map((visitor) => (
                     <tr key={visitor.id} className="border-b border-slate-700 hover:bg-slate-700/30">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
