@@ -188,8 +188,7 @@ const FORMATS = [
   { id: 'Team', label: 'Team', Icon: Users },
 ] as const;
 
-const INITIAL_WITH_SPOTLIGHT = 5; // 1 spotlight + 2 rows of 2
-const INITIAL_WITHOUT = 6;
+const INITIAL_COUNT = 6;
 
 /* Count-up that runs once on mount (skipped for reduced-motion users) */
 const useCountUp = (target: number, ms = 900) => {
@@ -300,15 +299,10 @@ const Projects = () => {
     [filteredProjects]
   );
 
-  // Layout: a featured project gets a full-width spotlight; the rest sit in a 2-column grid.
-  // If the rest is odd, the last card goes full-width too, so the grid always ends flush.
-  const hasSpotlight = !!sortedProjects[0]?.featured;
-  const initialCount = hasSpotlight ? INITIAL_WITH_SPOTLIGHT : INITIAL_WITHOUT;
+  // Layout: responsive 3-column grid of medium cards
+  const initialCount = INITIAL_COUNT;
   const displayedProjects = showAll ? sortedProjects : sortedProjects.slice(0, initialCount);
   const hasMoreProjects = sortedProjects.length > initialCount;
-  const spotlight = hasSpotlight ? displayedProjects[0] : null;
-  const rest = hasSpotlight ? displayedProjects.slice(1) : displayedProjects;
-  const lastIsWide = rest.length % 2 === 1;
 
   const resetFilters = () => {
     setSelectedCategory('All');
@@ -464,33 +458,26 @@ const Projects = () => {
             </div>
           ) : (
             <>
-              {spotlight && (
-                <div className="mb-12">
-                  <GroupLabel title="Featured project" />
-                  <Reveal>{renderCard(spotlight, true)}</Reveal>
-                </div>
-              )}
-
-              {rest.length > 0 && (
-                <div>
-                  {spotlight && <GroupLabel title="More projects" count={sortedProjects.length - 1} />}
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2" role="list" aria-labelledby="projects-heading">
-                    {rest.map((project, i) => {
-                      const wide = lastIsWide && i === rest.length - 1;
-                      return (
-                        <Reveal
-                          key={project._id}
-                          role="listitem"
-                          delay={(i % 2) * 80}
-                          className={`h-full ${wide ? 'md:col-span-2' : ''}`}
-                        >
-                          {renderCard(project, wide)}
-                        </Reveal>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              <div
+                className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+                role="list"
+                aria-labelledby="projects-heading"
+              >
+                {displayedProjects.map((project, i) => (
+                  <Reveal
+                    key={project._id}
+                    role="listitem"
+                    delay={(i % 3) * 60}
+                    className="h-full"
+                  >
+                    <ProjectCard
+                      project={project}
+                      variant="stacked"
+                      onClick={() => setSelectedProject(project)}
+                    />
+                  </Reveal>
+                ))}
+              </div>
 
               <div className="mt-10 flex justify-center">
                 {hasMoreProjects && !showAll && (
