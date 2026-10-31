@@ -18,7 +18,7 @@ const DEFAULT_ADMIN = {
   _id: '65a000000000000000000001',
   id: '65a000000000000000000001',
   username: 'nilanjan',
-  email: process.env.ADMIN_EMAIL || 'nayaknilanjan1@gmail.com',
+  email: process.env.ADMIN_EMAIL || 'starailab.info@gmail.com',
   role: 'admin',
   isSuperAdmin: true,
   faceDescriptor: [],

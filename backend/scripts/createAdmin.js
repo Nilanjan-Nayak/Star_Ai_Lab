@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 
 const ADMIN_USERNAME = 'nilanjan';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'nayaknilanjan1@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'starailab.info@gmail.com';
 const ADMIN_PASSWORD = 'StarAiLab@2024'; // Change this! Will be bcrypt hashed.
 
 async function createAdmin() {

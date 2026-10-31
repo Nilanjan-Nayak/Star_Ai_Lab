@@ -83,7 +83,7 @@ const initialContent = [
   // ──────────────────────────────────────────────
   { section: 'contact', key: 'title', value: 'Get in Touch', label: 'Section Title', fieldType: 'text' },
   { section: 'contact', key: 'subtitle', value: "Have a project in mind? Let's collaborate and build something amazing together.", label: 'Section Subtitle', fieldType: 'textarea' },
-  { section: 'contact', key: 'email', value: 'nayaknilanjan1@gmail.com', label: 'Contact Email', fieldType: 'email' },
+  { section: 'contact', key: 'email', value: 'starailab.info@gmail.com', label: 'Contact Email', fieldType: 'email' },
   {
     section: 'contact', key: 'socialLinks', label: 'Social Links', fieldType: 'array',
     value: [

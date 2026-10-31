@@ -12,7 +12,7 @@ const Contact = () => {
   const [status, setStatus] = useState<Status>('idle');
   const [statusMessage, setStatusMessage] = useState('');
 
-  const contactEmail = getContent('contact', 'email', 'info@starailabs.com');
+  const contactEmail = getContent('contact', 'email', 'starailab.info@gmail.com');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,13 +38,14 @@ const Contact = () => {
         setFormData({ name: '', email: '', subject: '', message: '' });
         setTimeout(() => setStatus('idle'), 7000);
       } else {
-        throw new Error(data.message || 'Failed to send message');
+        const errorMsg = data?.message || data?.errors?.[0]?.msg || 'Failed to send message';
+        throw new Error(errorMsg);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
       // Keep the visitor's text so nothing is lost, and tell them honestly.
       setStatus('error');
-      setStatusMessage("We couldn't send your message right now.");
+      setStatusMessage(error?.message || "We couldn't send your message right now.");
     } finally {
       setIsSubmitting(false);
     }
@@ -53,7 +54,7 @@ const Contact = () => {
   const contactInfo = [
     { icon: <Mail className="h-6 w-6" />, title: 'Email Us', content: contactEmail, link: `mailto:${contactEmail}` },
     { icon: <Phone className="h-6 w-6" />, title: 'Call Us', content: '+91 9883807806', link: 'tel:+919883807806' },
-    { icon: <MapPin className="h-6 w-6" />, title: 'Visit Us', content: 'San Francisco, CA', link: 'https://maps.google.com' },
+    { icon: <MapPin className="h-6 w-6" />, title: 'Visit Us', content: 'Kolkata, WB, India', link: 'https://maps.google.com' },
   ];
 
   const socialLinks = [
@@ -123,15 +124,15 @@ const Contact = () => {
         </Reveal>
 
         {/* Form */}
-        <Reveal delay={120} className="lg:col-span-3">
-          <div className="kit-glow-border rounded-3xl">
-            <div className="rounded-3xl bg-slate-950/90 p-7 backdrop-blur-xl sm:p-9">
+        <Reveal className="lg:col-span-3">
+          <div className="kit-card relative overflow-hidden p-8 md:p-10">
+            <div className="relative z-10">
               <h3 className="kit-display mb-6 text-2xl font-bold text-white">Send us a Message</h3>
 
               {status === 'success' && (
                 <div role="status" className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-4">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-400" style={{ animation: 'kitPop .5s ease both' }} />
-                  <p className="font-medium text-emerald-300">{statusMessage || "Thank you for your message! We'll get back to you soon."}</p>
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-400" />
+                  <p className="text-emerald-200">{statusMessage}</p>
                 </div>
               )}
 
