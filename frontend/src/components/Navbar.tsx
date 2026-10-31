@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Menu, X, Github, Linkedin, Mail, Sparkles, ArrowUpRight, ChevronRight, Globe, Layers, User, Send, Home as HomeIcon } from 'lucide-react';
+import logoImg from '../img/star_ai_lab_logo.png';
 
 export type SectionId = 'home' | 'about' | 'projects' | 'contact';
 
@@ -27,6 +28,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [scrollY, setScrollY] = useState<number>(0);
   const [activeSection, setActiveSection] = useState<SectionId>('home');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [sliderStyle, setSliderStyle] = useState<{ left: number; width: number; opacity: number }>({
     left: 0,
     width: 0,
@@ -35,6 +37,15 @@ const Navbar: React.FC = () => {
   const navContainerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const buttonRefs = useRef<{ [key in SectionId]?: HTMLButtonElement | null }>({});
+
+  // Auto-hide navbar when project detail modal is open
+  useEffect(() => {
+    const handleModalState = (e: any) => {
+      setIsModalOpen(Boolean(e.detail?.open));
+    };
+    window.addEventListener('star-project-modal', handleModalState);
+    return () => window.removeEventListener('star-project-modal', handleModalState);
+  }, []);
 
   // Accurate section detection using scroll tracking
   useEffect(() => {
@@ -131,7 +142,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* ── Top-Screen Dynamic Telemetry Reading Laser Bar ── */}
-      <div className="fixed top-0 left-0 right-0 h-[2px] z-[60] pointer-events-none bg-transparent">
+      <div className={`fixed top-0 left-0 right-0 h-[2px] z-[60] pointer-events-none bg-transparent transition-opacity duration-300 ${isModalOpen ? 'opacity-0' : 'opacity-100'}`}>
         <div
           className="h-full bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-500 shadow-[0_0_12px_rgba(6,182,212,0.9)] transition-all duration-150 ease-out"
           style={{ width: `${scrollProgress * 100}%`, opacity: scrollY > 10 ? 1 : 0 }}
@@ -139,7 +150,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* ── Floating Header Capsule ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-3 sm:px-6 pt-3 sm:pt-4 pointer-events-none">
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-3 sm:px-6 pt-3 sm:pt-4 pointer-events-none ${isModalOpen ? '-translate-y-32 opacity-0' : 'translate-y-0 opacity-100'}`}>
         <div className="w-full max-w-5xl mx-auto">
           {/* Main Navigation Pill */}
           <div
@@ -158,10 +169,10 @@ const Navbar: React.FC = () => {
             />
 
             <div className="px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-4">
-              {/* ── Left: Brand Identity & Logo ── */}
+              {/* ── Left: Brand Identity Logo ── */}
               <div
                 onClick={() => scrollToSection('home')}
-                className="flex items-center gap-2.5 cursor-pointer group select-none flex-shrink-0"
+                className="flex items-center cursor-pointer select-none flex-shrink-0"
                 role="button"
                 tabIndex={0}
                 aria-label="Star AI Lab Home"
@@ -171,22 +182,11 @@ const Navbar: React.FC = () => {
                   }
                 }}
               >
-                {/* High-Tech Glowing Star Emblem */}
-                <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500/25 via-blue-500/15 to-indigo-500/25 border border-cyan-400/35 group-hover:border-cyan-300/70 shadow-[0_0_14px_rgba(6,182,212,0.25)] transition-all duration-300 group-hover:scale-105">
-                  <Sparkles className="w-4 h-4 text-cyan-300 group-hover:rotate-12 transition-transform duration-300" />
-                  <div className="absolute inset-0 rounded-xl bg-cyan-400/15 blur-sm -z-10 group-hover:bg-cyan-400/30 transition-colors" />
-                </div>
-
-                {/* Brand Text + Live Indicator */}
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-white group-hover:text-cyan-300 transition-colors duration-200">
-                    Star AI Lab
-                  </span>
-                  <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Live
-                  </span>
-                </div>
+                <img
+                  src={logoImg}
+                  alt="Star AI Lab"
+                  className="h-6 sm:h-7 w-auto object-contain"
+                />
               </div>
 
               {/* ── Center: Fluid Magnetic Sliding Pill Navigation ── */}

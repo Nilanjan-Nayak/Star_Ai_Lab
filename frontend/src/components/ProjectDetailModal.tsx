@@ -39,10 +39,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project,
     window.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('project-modal-open');
+    window.dispatchEvent(new CustomEvent('star-project-modal', { detail: { open: true } }));
     dialogRef.current?.focus();
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
+      document.body.classList.remove('project-modal-open');
+      window.dispatchEvent(new CustomEvent('star-project-modal', { detail: { open: false } }));
     };
   }, [projectId]);
 
