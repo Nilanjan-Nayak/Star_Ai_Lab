@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Clock, Sparkles, } from 'lucide-react';
+import { Clock, Sparkles } from 'lucide-react';
+import cornerLogoImg from '../../img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png';
 
 const ComingSoon = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -206,7 +207,7 @@ const ComingSoon = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-yellow-400/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
           <img
-            src="/src/img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png"
+            src={cornerLogoImg}
             alt="Star AI Lab Logo"
             className="relative w-10 h-10 rounded-full border-2 border-blue-500/40 object-cover bg-white/10"
             onError={(e) => {
