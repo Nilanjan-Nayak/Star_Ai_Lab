@@ -89,7 +89,7 @@ const initialContent = [
     value: [
       { platform: 'GitHub', url: 'https://github.com/starailabs', icon: 'Github' },
       { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: 'Linkedin' },
-      { platform: 'Twitter', url: 'https://twitter.com/', icon: 'Twitter' }
+      { platform: 'Unstop', url: 'https://unstop.com/u/nilannay77458', icon: 'Unstop' }
     ]
   },
 

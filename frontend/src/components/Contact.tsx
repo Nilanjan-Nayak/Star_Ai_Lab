@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, MessageCircle, ArrowUpRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Github, Linkedin, MessageCircle, ArrowUpRight, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import { SectionShell, SectionHeader, Reveal, onSpot } from './SectionKit.tsx';
+import { UnstopIcon } from './UnstopIcon.tsx';
 
 type Status = 'idle' | 'success' | 'error';
 
@@ -60,7 +61,7 @@ const Contact = () => {
   const socialLinks = [
     { icon: <Github className="h-5 w-5" />, name: 'GitHub', link: 'https://github.com/Nilanjan-Nayak', hover: 'hover:text-white hover:border-white/40' },
     { icon: <Linkedin className="h-5 w-5" />, name: 'LinkedIn', link: 'https://www.linkedin.com/in/nilanjan-nayak-73b475322/', hover: 'hover:text-blue-300 hover:border-blue-400/60' },
-    { icon: <Twitter className="h-5 w-5" />, name: 'Twitter', link: 'https://twitter.com', hover: 'hover:text-cyan-300 hover:border-cyan-400/60' },
+    { icon: <UnstopIcon className="h-5 w-5" />, name: 'Unstop', link: 'https://unstop.com/u/nilannay77458', hover: 'hover:text-cyan-300 hover:border-cyan-400/60' },
   ];
 
   const fields: { name: 'name' | 'email' | 'subject'; label: string; type: string }[] = [

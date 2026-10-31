@@ -1,4 +1,5 @@
-import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe } from 'lucide-react';
+import { Github, Linkedin, Mail, Heart, ArrowUp, Globe } from 'lucide-react';
+import { UnstopIcon } from './UnstopIcon.tsx';
 import { useContent } from '../context/ContentContext';
 import { useCosmos } from './SectionKit';
 
@@ -36,7 +37,7 @@ const Footer = () => {
     { icon: <Globe className="h-5 w-5" />, href: 'https://nilanjan-nayak.my-board.org', name: 'Website', hover: 'hover:text-cyan-300 hover:border-cyan-400/50' },
     { icon: <Github className="h-5 w-5" />, href: 'https://github.com/Nilanjan-Nayak', name: 'GitHub', hover: 'hover:text-white hover:border-white/40' },
     { icon: <Linkedin className="h-5 w-5" />, href: 'https://www.linkedin.com/in/nilanjan-nayak-73b475322/', name: 'LinkedIn', hover: 'hover:text-blue-300 hover:border-blue-400/50' },
-    { icon: <Twitter className="h-5 w-5" />, href: 'https://twitter.com', name: 'Twitter', hover: 'hover:text-cyan-300 hover:border-cyan-400/50' },
+    { icon: <UnstopIcon className="h-5 w-5" />, href: 'https://unstop.com/u/nilannay77458', name: 'Unstop', hover: 'hover:text-cyan-300 hover:border-cyan-400/50' },
     { icon: <Mail className="h-5 w-5" />, href: 'mailto:nayaknilanjan2@gmail.com', name: 'Email', hover: 'hover:text-blue-300 hover:border-blue-400/50' },
   ];
 
