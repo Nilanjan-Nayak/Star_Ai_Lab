@@ -151,51 +151,45 @@ const Navbar: React.FC = () => {
 
         {/* ── Floating Header Capsule ── */}
           <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-3 sm:px-6 pt-3 sm:pt-4 pointer-events-none ${isModalOpen ? '-translate-y-32 opacity-0' : 'translate-y-0 opacity-100'}`}>
-            <div className="w-full max-w-7xl mx-auto">
+            <div className="w-full max-w-5xl mx-auto">
               {/* Main Navigation Pill */}
               <div
                 ref={navContainerRef}
                 className={`w-full rounded-full pointer-events-auto transition-all duration-300 ease-out relative ${isScrolled
-                    ? 'bg-[#050a17]/92 backdrop-blur-2xl border border-cyan-500/25 shadow-[0_12px_45px_rgba(0,0,0,0.85),0_0_35px_rgba(6,182,212,0.15)]'
-                    : 'bg-slate-950/70 backdrop-blur-xl border border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.45)]'
+                    ? 'bg-[#050a17]/90 backdrop-blur-2xl border border-cyan-500/25 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_25px_rgba(6,182,212,0.12)]'
+                    : 'bg-slate-950/65 backdrop-blur-xl border border-white/[0.1] shadow-[0_8px_32px_rgba(0,0,0,0.4)]'
                   }`}
               >
                 {/* Top Specular Edge Highlight */}
                 <div
-                  className={`absolute inset-x-16 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-t-full transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-40'
+                  className={`absolute inset-x-12 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none rounded-t-full transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-40'
                     }`}
                 />
 
-                <div className="px-5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between gap-4">
+                <div className="px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-4">
                   {/* ── Left: Brand Identity Logo ── */}
                   <div
                     onClick={() => scrollToSection('home')}
-                    className="flex items-center cursor-pointer select-none flex-shrink-0"
-                    role="button"
-                    tabIndex={0}
+                    className="flex items-center cursor-pointer select-none flex-shrink-0 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none active:ring-0 border-0 ring-0 shadow-none [-webkit-tap-highlight-color:transparent]"
                     aria-label="Star AI Lab Home"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        scrollToSection('home');
-                      }
-                    }}
                   >
                     <img
                       src={logoImg}
                       alt="Star AI Lab"
-                      className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-200 hover:scale-105"
+                      className="h-7 sm:h-8 w-auto object-contain pointer-events-none select-none outline-none border-0 ring-0 shadow-none"
+                      draggable={false}
                     />
                   </div>
 
                   {/* ── Center: Fluid Magnetic Sliding Pill Navigation ── */}
                   <nav
                     ref={navRef}
-                    className="relative hidden md:flex items-center gap-1 p-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl shadow-inner"
+                    className="relative hidden md:flex items-center gap-0.5 p-1 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl shadow-inner"
                     aria-label="Main Navigation"
                   >
                     {/* The Single Sliding Smooth Pill Indicator */}
                     <span
-                      className="absolute top-1.5 bottom-1.5 rounded-full bg-gradient-to-r from-cyan-500/20 via-blue-500/15 to-cyan-500/20 border border-cyan-400/35 shadow-[0_0_16px_rgba(6,182,212,0.25)] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                      className="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-cyan-500/20 via-blue-500/15 to-cyan-500/20 border border-cyan-400/35 shadow-[0_0_14px_rgba(6,182,212,0.2)] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
                       style={{
                         left: `${sliderStyle.left}px`,
                         width: `${sliderStyle.width}px`,
@@ -213,9 +207,9 @@ const Navbar: React.FC = () => {
                             buttonRefs.current[link.id] = el;
                           }}
                           onClick={() => scrollToSection(link.id)}
-                          className={`relative z-10 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-200 select-none flex items-center justify-center ${isActive
+                          className={`relative z-10 px-3.5 lg:px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-colors duration-200 select-none flex items-center justify-center ${isActive
                               ? 'text-cyan-300 font-bold'
-                              : 'text-slate-300 hover:text-white'
+                              : 'text-slate-400 hover:text-white'
                             }`}
                         >
                           <span>{link.label}</span>
@@ -225,47 +219,47 @@ const Navbar: React.FC = () => {
                   </nav>
 
                   {/* ── Right: Social Actions & Primary CTA Button ── */}
-                  <div className="hidden md:flex items-center gap-2.5 flex-shrink-0">
+                  <div className="hidden md:flex items-center gap-2 flex-shrink-0">
                     {/* Circular Glass Social Buttons */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <SocialButton
                         href="https://nilanjan-nayak.my-board.org"
-                        icon={<Globe className="w-4 h-4" />}
+                        icon={<Globe className="w-3.5 h-3.5" />}
                         title="Portfolio Website"
                         ariaLabel="Visit Developer Website"
                       />
                       <SocialButton
                         href="https://github.com/Nilanjan-Nayak"
-                        icon={<Github className="w-4 h-4" />}
+                        icon={<Github className="w-3.5 h-3.5" />}
                         title="GitHub Profile"
                         ariaLabel="Visit GitHub Profile"
                       />
                       <SocialButton
                         href="https://www.linkedin.com/in/nilanjan-nayak-73b475322/"
-                        icon={<Linkedin className="w-4 h-4" />}
+                        icon={<Linkedin className="w-3.5 h-3.5" />}
                         title="LinkedIn Profile"
                         ariaLabel="Visit LinkedIn Profile"
                       />
                       <SocialButton
                         href="mailto:nayaknilanjan2@gmail.com"
-                        icon={<Mail className="w-4 h-4" />}
+                        icon={<Mail className="w-3.5 h-3.5" />}
                         title="Send Email"
                         ariaLabel="Send Email"
                       />
                     </div>
 
                     {/* Vertical Separator */}
-                    <div className="h-5 w-px bg-white/15 mx-1 hidden lg:block" />
+                    <div className="h-4 w-px bg-white/15 mx-0.5 hidden lg:block" />
 
                     {/* High-Impact CTA Button with Light Sweep Animation */}
                     <button
                       onClick={() => scrollToSection('contact')}
-                      className="relative group overflow-hidden px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-300 hover:from-cyan-300 hover:to-sky-200 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.65)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+                      className="relative group overflow-hidden px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-full text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-300 hover:from-cyan-300 hover:to-sky-200 shadow-[0_0_16px_rgba(6,182,212,0.35)] hover:shadow-[0_0_24px_rgba(6,182,212,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5"
                       aria-label="Get in Touch"
                     >
                       <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
                       <span className="relative z-10">Get in Touch</span>
-                      <ArrowUpRight className="relative z-10 w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+                      <ArrowUpRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
                     </button>
                   </div>
 
@@ -362,23 +356,23 @@ const Navbar: React.FC = () => {
         );
 };
 
-// Reusable Circular Glass Social Action Button with Micro-interactions
-const SocialButton: React.FC<SocialButtonProps> = ({
-  href,
-  icon,
-  title,
-  ariaLabel,
+        // Reusable Circular Glass Social Action Button with Micro-interactions
+        const SocialButton: React.FC<SocialButtonProps> = ({
+          href,
+          icon,
+          title,
+          ariaLabel,
 }) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    title={title}
-    aria-label={ariaLabel || title}
-    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.04] hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 hover:shadow-[0_0_14px_rgba(6,182,212,0.25)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center group relative"
-  >
-    {icon}
-  </a>
-);
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={title}
+            aria-label={ariaLabel || title}
+            className="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group relative"
+          >
+            {icon}
+          </a>
+          );
 
           export default Navbar;
