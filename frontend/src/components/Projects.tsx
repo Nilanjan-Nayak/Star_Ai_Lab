@@ -3,12 +3,12 @@ import { ProjectContext } from '../context/ProjectContext';
 import ProjectCard from './ProjectCard';
 import ProjectFilter from './ProjectFilter';
 import ProjectDetailModal from './ProjectDetailModal';
+import { isSoloProject } from './projectVisuals';
 import { SectionShell, SectionHeader, Reveal } from './SectionKit.tsx';
 import { Project } from '../types/project';
 import {
-  Loader2, AlertCircle, FolderOpen, ArrowRight,
-  Sparkles, RefreshCw, ExternalLink, Layers, Zap, Award,
-  Search, X, Filter, Users, UserCheck
+  Loader2, AlertCircle, FolderOpen, ArrowRight, RefreshCw,
+  ExternalLink, Layers, Search, X, Users, UserCheck, Mail, Github
 } from 'lucide-react';
 
 const demoProjects: Project[] = [
@@ -118,7 +118,7 @@ const demoProjects: Project[] = [
     title: 'Carreerkick',
     description: 'A blockchain-based supply chain and verifiable credential tracking system that provides absolute transparency and tamper-proof verification.',
     shortDescription: 'Blockchain system for transparent credential and supply chain verification with smart contracts.',
-    category: 'AI/ML',
+    category: 'Blockchain',
     status: 'In Progress',
     technologies: ['Web3.js', 'Solidity', 'React', 'Tailwind CSS', 'Node.js', 'IPFS'],
     tags: ['blockchain', 'supply-chain', 'smart-contracts'],
@@ -152,7 +152,7 @@ const demoProjects: Project[] = [
     title: 'Media Storage',
     description: 'An IoT-based environmental monitoring and distributed media archiving system that tracks telemetry and organizes assets with high throughput.',
     shortDescription: 'IoT system for real-time monitoring and cloud-integrated media asset management.',
-    category: 'storage',
+    category: 'IoT',
     status: 'Completed',
     technologies: ['Arduino', 'Raspberry Pi', 'Python', 'AWS IoT', 'InfluxDB', 'Grafana'],
     tags: ['iot', 'storage', 'sensors', 'cloud'],
@@ -182,22 +182,51 @@ const demoProjects: Project[] = [
   }
 ];
 
-/* ── Inline stat pill ── */
-const StatPill = ({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) => (
-  <div className="flex items-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm shadow-md">
-    <div className="p-1.5 sm:p-2 rounded-xl bg-white/[0.05] text-cyan-400">{icon}</div>
-    <div>
-      <div className="text-base sm:text-lg font-bold text-white leading-none">{value}</div>
-      <div className="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-widest mt-0.5">{label}</div>
+const FORMATS = [
+  { id: 'All', label: 'All', Icon: null },
+  { id: 'Solo', label: 'Solo', Icon: UserCheck },
+  { id: 'Team', label: 'Team', Icon: Users },
+] as const;
+
+const INITIAL_WITH_SPOTLIGHT = 5; // 1 spotlight + 2 rows of 2
+const INITIAL_WITHOUT = 6;
+
+/* Count-up that runs once on mount (skipped for reduced-motion users) */
+const useCountUp = (target: number, ms = 900) => {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setValue(target);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min((t - t0) / ms, 1);
+      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return value;
+};
+
+const Stat = ({ value, label }: { value: number; label: string }) => {
+  const shown = useCountUp(value);
+  return (
+    <div className="px-6 text-center sm:px-9">
+      <div className="text-2xl font-semibold tabular-nums text-white">{shown}</div>
+      <div className="text-xs text-slate-400">{label}</div>
     </div>
+  );
+};
+
+const GroupLabel = ({ title, count }: { title: string; count?: number }) => (
+  <div className="mb-5 flex items-center gap-4">
+    <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
+    <span className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
+    {count !== undefined && <span className="text-xs tabular-nums text-slate-500">{count}</span>}
   </div>
 );
 
@@ -212,7 +241,7 @@ const Projects = () => {
 
   const normalizeProjects = (apiProjects: any[]): Project[] =>
     apiProjects.map((p) => {
-      const match = demoProjects.find(d => d.title.toLowerCase() === (p.title || '').toLowerCase());
+      const match = demoProjects.find((d) => d.title.toLowerCase() === (p.title || '').toLowerCase());
       return {
         ...p,
         githubUrl: p.githubUrl || '',
@@ -237,65 +266,63 @@ const Projects = () => {
     // Deep link from URL hash (e.g. #project-demo-agri)
     const hash = window.location.hash;
     if (hash && hash.startsWith('#project-')) {
-      const targetId = hash.replace('#project-', '');
-      const found = list.find(p => p._id === targetId);
-      if (found) {
-        setSelectedProject(found);
-      }
+      const found = list.find((p) => p._id === hash.replace('#project-', ''));
+      if (found) setSelectedProject(found);
     }
   }, [projects]);
 
-  // Dynamic Multi-Dimensional Filtering (Category + Search + Team Format)
   const filteredProjects = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return displayProjects.filter((project) => {
-      // Category Match
       const matchesCategory = selectedCategory === 'All' || project.category === selectedCategory;
-
-      // Team Format Match
-      const isSolo = !project.teamMembers || project.teamMembers.length <= 1 || project.projectType?.toLowerCase().includes('solo');
+      const solo = isSoloProject(project);
       const matchesFormat =
         selectedTeamFormat === 'All' ||
-        (selectedTeamFormat === 'Solo' && isSolo) ||
-        (selectedTeamFormat === 'Team' && !isSolo);
-
-      // Search Query Match (Title, Short Desc, Tech, Tags)
-      const q = searchQuery.trim().toLowerCase();
+        (selectedTeamFormat === 'Solo' && solo) ||
+        (selectedTeamFormat === 'Team' && !solo);
       const matchesSearch =
         !q ||
         project.title.toLowerCase().includes(q) ||
         project.shortDescription.toLowerCase().includes(q) ||
-        (project.technologies && project.technologies.some(t => t.toLowerCase().includes(q))) ||
-        (project.tags && project.tags.some(tag => tag.toLowerCase().includes(q)));
-
+        project.technologies?.some((t) => t.toLowerCase().includes(q)) ||
+        project.tags?.some((tag) => tag.toLowerCase().includes(q));
       return matchesCategory && matchesFormat && matchesSearch;
     });
   }, [displayProjects, selectedCategory, selectedTeamFormat, searchQuery]);
 
-  const sortedProjects = useMemo(() => {
-    return [...filteredProjects].sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-  }, [filteredProjects]);
+  const sortedProjects = useMemo(
+    () =>
+      [...filteredProjects].sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }),
+    [filteredProjects]
+  );
 
-  const displayedProjects = showAll ? sortedProjects : sortedProjects.slice(0, 6);
-  const hasMoreProjects = sortedProjects.length > 6;
+  // Layout: a featured project gets a full-width spotlight; the rest sit in a 2-column grid.
+  // If the rest is odd, the last card goes full-width too, so the grid always ends flush.
+  const hasSpotlight = !!sortedProjects[0]?.featured;
+  const initialCount = hasSpotlight ? INITIAL_WITH_SPOTLIGHT : INITIAL_WITHOUT;
+  const displayedProjects = showAll ? sortedProjects : sortedProjects.slice(0, initialCount);
+  const hasMoreProjects = sortedProjects.length > initialCount;
+  const spotlight = hasSpotlight ? displayedProjects[0] : null;
+  const rest = hasSpotlight ? displayedProjects.slice(1) : displayedProjects;
+  const lastIsWide = rest.length % 2 === 1;
+
+  const resetFilters = () => {
+    setSelectedCategory('All');
+    setSelectedTeamFormat('All');
+    setSearchQuery('');
+  };
 
   /* ── Loading ── */
   if (loading && displayProjects.length === 0) {
     return (
-      <section
-        id="projects"
-        className="py-32 relative"
-        style={{ background: 'linear-gradient(180deg,rgba(5,8,18,0) 0%,rgba(5,8,18,1) 6%)' }}
-      >
-        <div className="flex flex-col items-center justify-center py-24 gap-5">
-          <div className="relative">
-            <Loader2 className="h-10 w-10 text-cyan-400 animate-spin" />
-            <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20 animate-ping" />
-          </div>
-          <p className="text-white/40 text-sm" role="status">Loading projects…</p>
+      <section id="projects" className="relative py-32">
+        <div className="flex flex-col items-center justify-center gap-4 py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-cyan-300" />
+          <p className="text-sm text-slate-400" role="status">Loading projects…</p>
         </div>
       </section>
     );
@@ -304,27 +331,23 @@ const Projects = () => {
   /* ── Error ── */
   if (error && displayProjects.length === 0) {
     return (
-      <section
-        id="projects"
-        className="py-32 relative"
-        style={{ background: 'linear-gradient(180deg,rgba(5,8,18,0) 0%,rgba(5,8,18,1) 6%)' }}
-      >
-        <div className="flex flex-col items-center justify-center py-24 gap-5 max-w-sm mx-auto text-center">
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
-            <AlertCircle className="h-8 w-8 text-red-400" />
+      <section id="projects" className="relative py-32">
+        <div className="mx-auto flex max-w-sm flex-col items-center justify-center gap-4 py-24 text-center">
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <AlertCircle className="h-7 w-7 text-slate-300" />
           </div>
-          <h3 className="text-lg font-bold text-white">Unable to Load Projects</h3>
-          <p className="text-white/40 text-sm">We're having trouble connecting. Please try again.</p>
+          <h3 className="text-lg font-semibold text-white">Projects could not be loaded</h3>
+          <p className="text-sm text-slate-400">Check your connection and try again.</p>
           <div className="flex gap-3">
             <button
               onClick={() => fetchProjects()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-300 text-sm font-semibold hover:bg-cyan-500/20 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200"
             >
               <RefreshCw className="h-4 w-4" /> Retry
             </button>
             <button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/[0.06]"
             >
               <ExternalLink className="h-4 w-4" /> Contact
             </button>
@@ -334,175 +357,198 @@ const Projects = () => {
     );
   }
 
+  const renderCard = (project: Project, horizontal: boolean) => (
+    <ProjectCard
+      project={project}
+      variant={horizontal ? 'horizontal' : 'stacked'}
+      onClick={() => setSelectedProject(project)}
+    />
+  );
+
   /* ── Main render ── */
   return (
-    <SectionShell id="projects" tone="violet" bare aria-label="Star AI Labs project showcase">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* ── Header ── */}
-        <SectionHeader
-          headingId="projects-heading"
-          icon={<Sparkles className="h-4 w-4" />}
-          badge="Innovation Portfolio"
-          title="Transforming Ideas "
-          highlight="Into Reality"
-          subtitle="Explore our state-of-the-art AI, IoT, and Web3 solutions. Click on any project card to reveal its full development process, space-animated tech stack, future roadmap, and contributors."
+    <SectionShell id="projects" tone="violet" bare aria-label="Project showcase">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Atmosphere: faint dot grid fading out + one soft glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[560px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(148,163,184,0.18) 1px, transparent 0)', backgroundSize: '28px 28px' }}
         />
-        <Reveal className="-mt-6 mb-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-          <StatPill icon={<Layers className="h-4 w-4" />} value={`${displayProjects.length}`} label="Projects" />
-          <StatPill icon={<Award className="h-4 w-4" />} value={`${displayProjects.filter((p) => p.featured).length}`} label="Featured" />
-          <StatPill icon={<Zap className="h-4 w-4" />} value={`${displayProjects.filter((p) => p.status === 'In Progress').length}`} label="In Progress" />
-        </Reveal>
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 h-72 w-[42rem] max-w-full -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
 
-        {/* ── Dynamic Live Search & Creator Filter Controls ── */}
-        <div className="max-w-3xl mx-auto mb-8 sm:mb-10 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search missions by name, technology (e.g. Python, React, AI), or tags..."
-              className="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] hover:border-cyan-400/40 focus:border-cyan-400 focus:bg-white/[0.06] text-white text-sm placeholder-white/35 outline-none transition-all duration-300 shadow-lg backdrop-blur-md"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-white/40 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+        <div className="relative">
+          <SectionHeader
+            headingId="projects-heading"
+            icon={<Layers className="h-4 w-4" />}
+            badge="Projects"
+            title="Projects across "
+            highlight="AI, IoT and Web3"
+            subtitle="Open any project to see how it was built, the technology behind it, what is planned next and who worked on it."
+          />
+
+          <Reveal className="-mt-6 mb-10 flex justify-center">
+            <div className="flex divide-x divide-white/10 rounded-xl border border-white/10 bg-white/[0.04] py-3 backdrop-blur">
+              <Stat value={displayProjects.length} label="Projects" />
+              <Stat value={displayProjects.filter((p) => p.featured).length} label="Featured" />
+              <Stat value={displayProjects.filter((p) => p.status === 'In Progress').length} label="In progress" />
+            </div>
+          </Reveal>
+
+          {/* ── Toolbar ── */}
+          <div className="mb-10 space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur sm:p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search projects"
+                  placeholder="Search by name, technology or tag"
+                  className="w-full rounded-lg border border-white/10 bg-[#0a0f1c]/60 py-2.5 pl-10 pr-10 text-sm text-white outline-none transition-colors placeholder:text-slate-500 hover:border-white/20 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/20"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              <div role="group" aria-label="Filter by team format" className="flex shrink-0 rounded-lg border border-white/10 bg-[#0a0f1c]/60 p-1">
+                {FORMATS.map(({ id, label, Icon }) => {
+                  const active = selectedTeamFormat === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setSelectedTeamFormat(id)}
+                      className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${active ? 'bg-cyan-300/15 text-cyan-200' : 'text-slate-400 hover:text-white'
+                        }`}
+                    >
+                      {Icon && <Icon className="h-3.5 w-3.5" aria-hidden="true" />}
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <ProjectFilter selectedCategory={selectedCategory} onCategoryChange={setSelectedCategory} projects={displayProjects} />
+              <p aria-live="polite" className="shrink-0 text-xs tabular-nums text-slate-400">
+                Showing {filteredProjects.length} of {displayProjects.length}
+              </p>
+            </div>
           </div>
 
-          {/* Sub-Filter: Creator Format (All vs Solo vs Team) */}
-          <div className="flex items-center justify-between flex-wrap gap-2 px-1">
-            <div className="flex items-center gap-1.5 text-xs text-white/40">
-              <Filter className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Format:</span>
+          {/* ── Projects ── */}
+          {displayedProjects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <FolderOpen className="h-8 w-8 text-slate-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">No projects match</h3>
+              <p className="max-w-sm text-sm text-slate-400">Try a different search term or clear the filters.</p>
+              <button
+                onClick={resetFilters}
+                className="mt-2 rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-200 transition-colors hover:bg-cyan-300/20"
+              >
+                Clear filters
+              </button>
             </div>
+          ) : (
+            <>
+              {spotlight && (
+                <div className="mb-12">
+                  <GroupLabel title="Featured project" />
+                  <Reveal>{renderCard(spotlight, true)}</Reveal>
+                </div>
+              )}
 
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-              <button
-                onClick={() => setSelectedTeamFormat('All')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${selectedTeamFormat === 'All'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
-                  : 'text-white/40 hover:text-white/70'
-                  }`}
-              >
-                All Missions
-              </button>
-              <button
-                onClick={() => setSelectedTeamFormat('Solo')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${selectedTeamFormat === 'Solo'
-                  ? 'bg-violet-500/20 text-violet-300 border border-violet-400/30'
-                  : 'text-white/40 hover:text-white/70'
-                  }`}
-              >
-                <UserCheck className="w-3 h-3" /> Solo
-              </button>
-              <button
-                onClick={() => setSelectedTeamFormat('Team')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${selectedTeamFormat === 'Team'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'
-                  : 'text-white/40 hover:text-white/70'
-                  }`}
-              >
-                <Users className="w-3 h-3" /> Team
-              </button>
-            </div>
+              {rest.length > 0 && (
+                <div>
+                  {spotlight && <GroupLabel title="More projects" count={sortedProjects.length - 1} />}
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2" role="list" aria-labelledby="projects-heading">
+                    {rest.map((project, i) => {
+                      const wide = lastIsWide && i === rest.length - 1;
+                      return (
+                        <Reveal
+                          key={project._id}
+                          role="listitem"
+                          delay={(i % 2) * 80}
+                          className={`h-full ${wide ? 'md:col-span-2' : ''}`}
+                        >
+                          {renderCard(project, wide)}
+                        </Reveal>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
-            <div className="text-xs font-mono text-cyan-400/70">
-              Showing {filteredProjects.length} of {displayProjects.length} Projects
+              <div className="mt-10 flex justify-center">
+                {hasMoreProjects && !showAll && (
+                  <button
+                    onClick={() => setShowAll(true)}
+                    className="inline-flex items-center gap-3 rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-6 py-3 text-sm font-medium text-cyan-100 transition-colors hover:bg-cyan-300/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                  >
+                    View all projects
+                    <span className="rounded bg-cyan-300/20 px-1.5 py-0.5 text-xs tabular-nums">+{sortedProjects.length - initialCount}</span>
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                )}
+                {showAll && hasMoreProjects && (
+                  <button
+                    onClick={() => setShowAll(false)}
+                    className="rounded-lg border border-white/10 px-6 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                  >
+                    Show fewer
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ── Closing call to action ── */}
+          <Reveal className="mt-16">
+            <div className="relative flex flex-col gap-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-7 sm:flex-row sm:items-center sm:justify-between sm:p-10">
+              <div aria-hidden="true" className="pointer-events-none absolute -left-10 top-1/2 h-48 w-80 -translate-y-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+              <div className="relative">
+                <h3 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">Have a project in mind?</h3>
+                <p className="mt-1 text-sm text-slate-400">Tell me what you want to build and let's talk about it.</p>
+              </div>
+              <div className="relative flex flex-wrap gap-3">
+                <button
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]"
+                >
+                  <Mail className="h-4 w-4" aria-hidden="true" /> Get in touch
+                </button>
+                <a
+                  href="https://github.com/Nilanjan-Nayak"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-5 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-white/[0.06] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                >
+                  <Github className="h-4 w-4" aria-hidden="true" /> GitHub profile
+                </a>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
-
-        {/* ── Category Filter ── */}
-        <ProjectFilter
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          projects={displayProjects}
-        />
-
-        {/* ── Grid ── */}
-        {displayedProjects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
-              <FolderOpen className="h-10 w-10 text-white/25" />
-            </div>
-            <h3 className="text-xl font-bold text-white">No Matching Missions Found</h3>
-            <p className="text-white/40 text-sm text-center max-w-sm">
-              No projects matched your search criteria. Try a different query or reset filters.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedCategory('All');
-                setSelectedTeamFormat('All');
-                setSearchQuery('');
-              }}
-              className="mt-2 px-5 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-bold hover:bg-cyan-500/20 transition-all"
-            >
-              Reset All Filters
-            </button>
-          </div>
-        ) : (
-          <>
-            <div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12"
-              role="list"
-              aria-labelledby="projects-heading"
-            >
-              {displayedProjects.map((project, index) => (
-                <Reveal key={project._id} role="listitem" delay={(index % 3) * 90} className="h-full">
-                  <ProjectCard
-                    project={project}
-                    onClick={() => setSelectedProject(project)}
-                  />
-                </Reveal>
-              ))}
-            </div>
-
-            {/* CTA row */}
-            <div className="flex justify-center gap-4">
-              {hasMoreProjects && !showAll && (
-                <button
-                  onClick={() => setShowAll(true)}
-                  className="group relative flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white overflow-hidden transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-black"
-                  style={{
-                    background: 'linear-gradient(135deg,rgba(34,211,238,0.12),rgba(99,102,241,0.12))',
-                    border: '1px solid rgba(34,211,238,0.2)',
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  <span>View All Projects</span>
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-                  <span className="px-2.5 py-1 text-xs font-bold bg-cyan-500/20 border border-cyan-400/30 rounded-lg text-cyan-300">
-                    +{sortedProjects.length - 6}
-                  </span>
-                </button>
-              )}
-
-              {showAll && hasMoreProjects && (
-                <button
-                  onClick={() => setShowAll(false)}
-                  className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-semibold text-white/50 border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:text-white/70 transition-all duration-200 focus:outline-none"
-                >
-                  Show Less
-                </button>
-              )}
-            </div>
-          </>
-        )}
       </div>
 
-      {/* ── Interactive Cosmic Project Detail Modal ── */}
       {selectedProject && (
         <ProjectDetailModal
           project={selectedProject}
           onClose={() => {
             setSelectedProject(null);
-            // Reset URL hash if opened from deep link
             if (window.location.hash.startsWith('#project-')) {
               window.history.replaceState(null, '', window.location.pathname);
             }
