@@ -1343,134 +1343,104 @@ return (
         )}
 
         {/* ── LIVE RADAR & SECURITY TAB ── */}
-        {activeTab === 'traffic' && (
-          <div className="space-y-8 animate-in fade-in duration-300">
+        {activeTab === 'traffic' && (() => {
+          const totalHits = (trafficData?.serverBreakdown || []).reduce((acc: number, cur: any) => acc + (cur.count || 0), 0) || 1;
 
-            {/* Telemetry Header Bar */}
-            <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-6 rounded-2xl border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-                  </span>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    Live Traffic & Cyber Threat Radar
-                    <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-full">
-                      Real-Time
-                      {activeTab === 'traffic' && (() => {
-                        const totalHits = (trafficData?.serverBreakdown || []).reduce((acc: number, cur: any) => acc + (cur.count || 0), 0) || 1;
+          const filteredAlerts = (trafficData?.securityAlerts || []).filter((alert: any) => {
+            const q = radarSearch.toLowerCase();
+            const matchesSearch = !radarSearch ||
+              alert.ip?.toLowerCase().includes(q) ||
+              alert.url?.toLowerCase().includes(q) ||
+              alert.threatType?.toLowerCase().includes(q) ||
+              alert.payload?.toLowerCase().includes(q);
 
-                        const filteredAlerts = (trafficData?.securityAlerts || []).filter((alert: any) => {
-                          const q = radarSearch.toLowerCase();
-                          const matchesSearch = !radarSearch ||
-                            alert.ip?.toLowerCase().includes(q) ||
-                            alert.url?.toLowerCase().includes(q) ||
-                            alert.threatType?.toLowerCase().includes(q) ||
-                            alert.payload?.toLowerCase().includes(q);
+            const matchesType = threatFilter === 'ALL' ||
+              (threatFilter === 'SQLI' && alert.threatType?.toUpperCase().includes('SQL')) ||
+              (threatFilter === 'XSS' && alert.threatType?.toUpperCase().includes('XSS')) ||
+              (threatFilter === 'TRAVERSAL' && alert.threatType?.toUpperCase().includes('TRAVERSAL')) ||
+              (threatFilter === 'SCANNER' && alert.threatType?.toUpperCase().includes('SCANNER'));
 
-                          const matchesType = threatFilter === 'ALL' ||
-                            (threatFilter === 'SQLI' && alert.threatType?.toUpperCase().includes('SQL')) ||
-                            (threatFilter === 'XSS' && alert.threatType?.toUpperCase().includes('XSS')) ||
-                            (threatFilter === 'TRAVERSAL' && alert.threatType?.toUpperCase().includes('TRAVERSAL')) ||
-                            (threatFilter === 'SCANNER' && alert.threatType?.toUpperCase().includes('SCANNER'));
+            return matchesSearch && matchesType;
+          });
 
-                          return matchesSearch && matchesType;
-                        });
+          const filteredVisits = (trafficData?.recentVisits || []).filter((v: any) => {
+            if (!radarSearch) return true;
+            const q = radarSearch.toLowerCase();
+            return (
+              v.ip?.toLowerCase().includes(q) ||
+              v.serverSource?.toLowerCase().includes(q) ||
+              v.path?.toLowerCase().includes(q) ||
+              v.browser?.toLowerCase().includes(q) ||
+              v.location?.toLowerCase().includes(q)
+            );
+          });
 
-                        const filteredVisits = (trafficData?.recentVisits || []).filter((v: any) => {
-                          if (!radarSearch) return true;
-                          const q = radarSearch.toLowerCase();
-                          return (
-                            v.ip?.toLowerCase().includes(q) ||
-                            v.serverSource?.toLowerCase().includes(q) ||
-                            v.path?.toLowerCase().includes(q) ||
-                            v.browser?.toLowerCase().includes(q) ||
-                            v.location?.toLowerCase().includes(q)
-                          );
-                        });
-
-                        return (
-              <div className="space-y-8 animate-in fade-in duration-300">
-                
-                {/* Telemetry Header Bar */}
-                <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-6 rounded-2xl border border-white/10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+          return (
+            <div className="space-y-8 animate-in fade-in duration-300">
+              
+              {/* Telemetry Header Bar */}
+              <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-6 rounded-2xl border border-white/10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+                    </span>
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      Live Traffic & Cyber Threat Radar
+                      <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-full">
+                        100% Dynamic Real-Time
                       </span>
                     </h2>
-                      <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                        Live Traffic & Cyber Threat Radar
-                        <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-full">
-                          100% Dynamic Real-Time
-                        </span>
-                      </h2>
-                    </div>
-                    <p className="text-white/40 text-xs mt-1">
-                      Continuous real-time telemetry inspecting all visitor IPs, origin servers, and automatic security firewall with instant email alerts.
-                    </p>
-                    <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-400 font-mono">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      <span>Last telemetry sync: <strong className="text-cyan-300">{lastSyncTime}</strong></span>
-                      <span className="text-slate-600">•</span>
-                      <span>Listening on port 5000</span>
-                    </div>
                   </div>
                   <p className="text-white/40 text-xs mt-1">
-                    Continuous monitoring of visitor IPs, origin servers, and automatic security firewall with instant email alerts.
+                    Continuous real-time telemetry inspecting all visitor IPs, origin servers, and automatic security firewall with instant email alerts.
                   </p>
+                  <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-400 font-mono">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>Last telemetry sync: <strong className="text-cyan-300">{lastSyncTime}</strong></span>
+                    <span className="text-slate-600">•</span>
+                    <span>Listening on port 5000</span>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <button
-                    onClick={handleTestSecurityAlert}
-                    disabled={testingAlert}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 rounded-xl text-xs font-semibold transition-all shadow-[0_0_15px_rgba(239,68,68,0.15)] disabled:opacity-50"
-                    title="Send a sample security breach notification to starailab.info@gmail.com"
-                  >
-                    {testingAlert ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                    Send Test Alert Email
-                  </button>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    {/* Polling Interval Switcher */}
-                    <div className="flex items-center rounded-xl bg-white/[0.04] border border-white/10 p-1 text-xs">
-                      <button
-                        onClick={() => setPollingInterval(3500)}
-                        className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                          pollingInterval === 3500
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm'
-                            : 'text-white/40 hover:text-white'
-                        }`}
-                        title="Poll every 3.5 seconds"
-                      >
-                        ⚡ 3.5s Live
-                      </button>
-                      <button
-                        onClick={() => setPollingInterval(8000)}
-                        className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                          pollingInterval === 8000
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm'
-                            : 'text-white/40 hover:text-white'
-                        }`}
-                        title="Poll every 8 seconds"
-                      >
-                        ⏱️ 8s
-                      </button>
-                      <button
-                        onClick={() => setPollingInterval(0)}
-                        className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                          pollingInterval === 0
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm'
-                            : 'text-white/40 hover:text-white'
-                        }`}
-                        title="Pause live polling"
-                      >
-                        ⏸️ Pause
-                      </button>
-                    </div>
+                  {/* Polling Interval Switcher */}
+                  <div className="flex items-center rounded-xl bg-white/[0.04] border border-white/10 p-1 text-xs">
+                    <button
+                      onClick={() => setPollingInterval(3500)}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        pollingInterval === 3500
+                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm'
+                          : 'text-white/40 hover:text-white'
+                      }`}
+                      title="Poll every 3.5 seconds"
+                    >
+                      ⚡ 3.5s Live
+                    </button>
+                    <button
+                      onClick={() => setPollingInterval(8000)}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        pollingInterval === 8000
+                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm'
+                          : 'text-white/40 hover:text-white'
+                      }`}
+                      title="Poll every 8 seconds"
+                    >
+                      ⏱️ 8s
+                    </button>
+                    <button
+                      onClick={() => setPollingInterval(0)}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        pollingInterval === 0
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm'
+                          : 'text-white/40 hover:text-white'
+                      }`}
+                      title="Pause live polling"
+                    >
+                      ⏸️ Pause
+                    </button>
+                  </div>
 
                   <button
                     onClick={fetchLiveTraffic}
@@ -1480,682 +1450,473 @@ return (
                     <RefreshCw className={`w-3.5 h-3.5 ${trafficLoading ? 'animate-spin text-cyan-400' : ''}`} />
                     Refresh
                   </button>
-                    <button
-                      onClick={fetchLiveTraffic}
-                      disabled={trafficLoading}
-                      className="flex items-center gap-2 px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white rounded-xl text-xs font-medium transition-all"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${trafficLoading ? 'animate-spin text-cyan-400' : ''}`} />
-                      Refresh
-                    </button>
 
                   {(trafficData?.securityAlerts?.length || 0) > 0 && (
-                    {(trafficData?.securityAlerts?.length || 0) > 0 && (
-                      <button
-                        onClick={handleClearAlerts}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400 rounded-xl text-xs transition-all"
-                        title="Clear security threat incident logs"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Clear Logs
-                      </button>
-                    )}
-
                     <button
                       onClick={handleClearAlerts}
                       className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400 rounded-xl text-xs transition-all"
-                      onClick={handleResetTraffic}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-amber-500/10 border border-white/10 hover:border-amber-500/20 text-white/40 hover:text-amber-400 rounded-xl text-xs transition-all"
-                      title="Reset visitor traffic metrics"
+                      title="Clear security threat incident logs"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Clear Logs
-                      <Activity className="w-3.5 h-3.5" />
-                      Reset Traffic
                     </button>
                   )}
+
+                  <button
+                    onClick={handleResetTraffic}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-amber-500/10 border border-white/10 hover:border-amber-500/20 text-white/40 hover:text-amber-400 rounded-xl text-xs transition-all"
+                    title="Reset visitor traffic metrics"
+                  >
+                    <Activity className="w-3.5 h-3.5" />
+                    Reset Traffic
+                  </button>
+                </div>
+              </div>
+
+              {/* Simulation & Defense Testing Playground */}
+              <div className="bg-gradient-to-r from-blue-950/40 via-purple-950/20 to-slate-900 p-5 rounded-2xl border border-cyan-500/20 shadow-xl shadow-cyan-950/20">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 pb-3 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 bg-cyan-500/15 rounded-xl border border-cyan-500/30">
+                      <Zap className="w-4 h-4 text-cyan-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-white text-sm font-semibold flex items-center gap-2">
+                        Interactive Live Defense & Traffic Testing Playground
+                        <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-300 font-mono">1-Click Probes</span>
+                      </h3>
+                      <p className="text-white/40 text-xs">
+                        Click any test action below to verify live detection, 403 blocking, table updates, and email dispatch to <span className="text-cyan-400 font-mono">starailab.info@gmail.com</span>:
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleTestSecurityAlert}
+                    disabled={testingAlert}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 rounded-xl text-xs font-semibold transition-all shadow-[0_0_15px_rgba(239,68,68,0.15)] disabled:opacity-50 shrink-0"
+                  >
+                    {testingAlert ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    Send Direct Test Email Alert
+                  </button>
+                </div>
+
+                {/* Testing Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Attack Probes */}
+                  <div className="space-y-2">
+                    <span className="text-[11px] uppercase tracking-wider text-red-400 font-semibold flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5" /> Trigger Security Attack Probes (403 Auto-Blocked)
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleSimulateAttack('sqli', 'SQL Injection')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 hover:border-red-500/40 text-red-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                        <span className="truncate">Test SQLi Injection</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateAttack('xss', 'Cross-Site Scripting (XSS)')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 hover:border-purple-500/40 text-purple-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                        <span className="truncate">Test XSS Script</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateAttack('traversal', 'Path Traversal (.env)')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 hover:border-amber-500/40 text-amber-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span className="truncate">Test Path Traversal</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateAttack('scanner', 'Automated Scanner Tool')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 hover:border-rose-500/40 text-rose-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                        <span className="truncate">Test Scanner Probe</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inbound Visitor Referrals */}
+                  <div className="space-y-2">
+                    <span className="text-[11px] uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5" /> Simulate Inbound Visitor Referrals
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleSimulateVisitor('Google Search Server', '🇺🇸 United States', 'Google Chrome', 'Windows', 'Desktop')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/25 hover:border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <Globe className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span className="truncate">+ Google Search (USA)</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateVisitor('GitHub Repository', '🇬🇧 United Kingdom', 'Mozilla Firefox', 'macOS', 'Desktop')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <GithubIcon className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <span className="truncate">+ GitHub Link (UK)</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateVisitor('LinkedIn Server', '🇩🇪 Germany', 'Microsoft Edge', 'Windows', 'Desktop')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 hover:border-indigo-500/40 text-indigo-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <Server className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <span className="truncate">+ LinkedIn (Germany)</span>
+                      </button>
+                      <button
+                        onClick={() => handleSimulateVisitor('Direct / Mobile Safari', '🇮🇳 India', 'Apple Safari', 'iOS', 'Mobile')}
+                        disabled={simulating}
+                        className="px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
+                      >
+                        <Smartphone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="truncate">+ Mobile Safari (India)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Toast notification for simulation */}
+                {(simulationToast || testAlertMessage) && (
+                  <div className="mt-4 p-3 rounded-xl bg-slate-900/90 border border-cyan-400/30 text-white text-xs flex items-center gap-2 animate-in fade-in">
+                    <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>{simulationToast || testAlertMessage}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* 4 Metric Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Active Online */}
+                <div className="bg-gradient-to-br from-cyan-500/15 to-blue-600/5 border border-cyan-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(6,182,212,0.1)]">
+                  <div className="flex items-center justify-between text-white/50 mb-3">
+                    <span className="text-xs uppercase font-semibold tracking-wider">Active Explorers</span>
+                    <Users className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div className="text-3xl font-black text-white flex items-baseline gap-2">
+                    {trafficData?.activeVisitors || 1}
+                    <span className="text-xs font-medium text-emerald-400 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> live now
+                    </span>
+                  </div>
+                  <p className="text-white/30 text-[11px] mt-1">Visitors in the last 15 minutes</p>
+                </div>
+
+                {/* Total Visits */}
+                <div className="bg-gradient-to-br from-purple-500/15 to-indigo-600/5 border border-purple-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(168,85,247,0.1)]">
+                  <div className="flex items-center justify-between text-white/50 mb-3">
+                    <span className="text-xs uppercase font-semibold tracking-wider">Total Traffic</span>
+                    <Activity className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div className="text-3xl font-black text-white">
+                    {trafficData?.totalVisits || 1}
+                  </div>
+                  <p className="text-white/30 text-[11px] mt-1">
+                    Across <span className="text-purple-300 font-semibold">{trafficData?.uniqueVisitors || 1}</span> unique IP address{trafficData?.uniqueVisitors !== 1 ? 'es' : ''}
+                  </p>
+                </div>
+
+                {/* Origin Sources */}
+                <div className="bg-gradient-to-br from-blue-500/15 to-sky-600/5 border border-blue-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(59,130,246,0.1)]">
+                  <div className="flex items-center justify-between text-white/50 mb-3">
+                    <span className="text-xs uppercase font-semibold tracking-wider">Origin Sources</span>
+                    <Server className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="text-3xl font-black text-white">
+                    {trafficData?.serverBreakdown?.length || 1}
+                  </div>
+                  <p className="text-white/30 text-[11px] mt-1">Direct, search engines & external links</p>
+                </div>
+
+                {/* Cyber Threats Blocked */}
+                <div className={`bg-gradient-to-br ${(trafficData?.totalThreats || 0) > 0
+                    ? 'from-red-500/20 to-orange-600/10 border-red-500/30'
+                    : 'from-emerald-500/15 to-teal-600/5 border-emerald-500/20'
+                  } border rounded-2xl p-5 shadow-[0_4px_20px_rgba(239,68,68,0.1)]`}>
+                  <div className="flex items-center justify-between text-white/50 mb-3">
+                    <span className="text-xs uppercase font-semibold tracking-wider">Blocked Threats</span>
+                    <ShieldAlert className={`w-5 h-5 ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`} />
+                  </div>
+                  <div className={`text-3xl font-black ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400' : 'text-emerald-300'}`}>
+                    {trafficData?.totalThreats || 0}
+                  </div>
+                  <p className="text-white/30 text-[11px] mt-1">
+                    {(trafficData?.totalThreats || 0) > 0 ? 'Alerts dispatched to Gmail' : 'Zero breaches • Shield active'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Origin Servers & Inbound Traffic Distribution */}
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white font-semibold text-sm flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-cyan-400" />
+                    Origin Servers & Inbound Traffic Distribution
+                  </h3>
+                  <span className="text-white/40 text-xs">Total Hits: {totalHits}</span>
+                </div>
+
+                <div className="space-y-3">
+                  {trafficData?.serverBreakdown && trafficData.serverBreakdown.length > 0 ? (
+                    trafficData.serverBreakdown.map((s: any, idx: number) => {
+                      const pct = Math.round((s.count / totalHits) * 100);
+                      return (
+                        <div key={idx} className="space-y-1.5 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2">
+                              <Server className="w-3.5 h-3.5 text-cyan-400" />
+                              <span className="text-white font-medium">{s.server}</span>
+                            </div>
+                            <div className="flex items-center gap-2 font-mono">
+                              <span className="text-cyan-300 font-semibold">{s.count} hits</span>
+                              <span className="text-white/40">({pct}%)</span>
+                            </div>
+                          </div>
+                          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500"
+                              style={{ width: `${Math.max(5, pct)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <span className="text-white/30 text-xs">Direct / Localhost navigation</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Platforms & Browsers Analytics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Devices */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                  <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                    <Laptop className="w-4 h-4 text-cyan-400" />
+                    Audience Devices
+                  </h3>
+                  <div className="space-y-2.5">
+                    {(trafficData?.deviceBreakdown || [
+                      { type: 'Desktop', count: 1 },
+                      { type: 'Mobile', count: 0 },
+                      { type: 'Tablet', count: 0 }
+                    ]).map((dev: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                        <div className="flex items-center gap-2.5">
+                          {dev.type === 'Desktop' ? <Laptop className="w-4 h-4 text-blue-400" /> :
+                            dev.type === 'Mobile' ? <Smartphone className="w-4 h-4 text-emerald-400" /> :
+                            <Tablet className="w-4 h-4 text-purple-400" />}
+                          <span className="text-white/80 font-medium">{dev.type}</span>
+                        </div>
+                        <span className="font-mono text-cyan-300 font-semibold">{dev.count} visits</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Browsers */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                  <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-purple-400" />
+                    Top Browsers
+                  </h3>
+                  <div className="space-y-2.5">
+                    {(trafficData?.browserBreakdown || [
+                      { name: 'Google Chrome', count: 1 }
+                    ]).map((b: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                        <span className="text-white/80 font-medium">{b.name}</span>
+                        <span className="font-mono text-purple-300 font-semibold">{b.count} visits</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-                    {/* Status Alert Banner */}
-                    {testAlertMessage && (
-                      <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2 animate-in fade-in">
-                        <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                        <span>{testAlertMessage}</span>
-                        {/* Simulation & Defense Testing Playground */}
-                        <div className="bg-gradient-to-r from-blue-950/40 via-purple-950/20 to-slate-900 p-5 rounded-2xl border border-cyan-500/20 shadow-xl shadow-cyan-950/20">
-                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 pb-3 border-b border-white/[0.08]">
-                            <div className="flex items-center gap-2.5">
-                              <div className="p-2 bg-cyan-500/15 rounded-xl border border-cyan-500/30">
-                                <Zap className="w-4 h-4 text-cyan-400" />
-                              </div>
-                              <div>
-                                <h3 className="text-white text-sm font-semibold flex items-center gap-2">
-                                  Interactive Live Defense & Traffic Testing Playground
-                                  <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-300 font-mono">1-Click Probes</span>
-                                </h3>
-                                <p className="text-white/40 text-xs">
-                                  Click any test action below to verify live detection, 403 blocking, table updates, and email dispatch to <span className="text-cyan-400 font-mono">starailab.info@gmail.com</span>:
-                                </p>
-                              </div>
-                            </div>
+              {/* Search & Filter Toolbar */}
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-white/30 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={radarSearch}
+                    onChange={(e) => setRadarSearch(e.target.value)}
+                    placeholder="Search by IP, URL, origin server, attack payload..."
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Filter className="w-3.5 h-3.5 text-white/40" />
+                  <span className="text-xs text-white/40">Threat Type:</span>
+                  <select
+                    value={threatFilter}
+                    onChange={(e) => setThreatFilter(e.target.value)}
+                    className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                  >
+                    <option value="ALL" className="bg-slate-900 text-white">All Attacks</option>
+                    <option value="SQLI" className="bg-slate-900 text-white">SQL Injection</option>
+                    <option value="XSS" className="bg-slate-900 text-white">XSS Scripting</option>
+                    <option value="TRAVERSAL" className="bg-slate-900 text-white">Path Traversal</option>
+                    <option value="SCANNER" className="bg-slate-900 text-white">Scanner Tool</option>
+                  </select>
+                </div>
+              </div>
 
-                            <button
-                              onClick={handleTestSecurityAlert}
-                              disabled={testingAlert}
-                              className="flex items-center gap-2 px-4 py-2 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 rounded-xl text-xs font-semibold transition-all shadow-[0_0_15px_rgba(239,68,68,0.15)] disabled:opacity-50 shrink-0"
-                            >
-                              {testingAlert ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                              Send Direct Test Email Alert
-                            </button>
-                          </div>
-
-                          {/* Testing Action Buttons */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Attack Probes */}
-                            <div className="space-y-2">
-                              <span className="text-[11px] uppercase tracking-wider text-red-400 font-semibold flex items-center gap-1.5">
-                                <Flame className="w-3.5 h-3.5" /> Trigger Security Attack Probes (403 Auto-Blocked)
-                              </span>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button
-                                  onClick={() => handleSimulateAttack('sqli', 'SQL Injection')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 hover:border-red-500/40 text-red-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <ShieldAlert className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                                  <span className="truncate">Test SQLi Injection</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateAttack('xss', 'Cross-Site Scripting (XSS)')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 hover:border-purple-500/40 text-purple-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <ShieldAlert className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                                  <span className="truncate">Test XSS Script</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateAttack('traversal', 'Path Traversal (.env)')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 hover:border-amber-500/40 text-amber-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                                  <span className="truncate">Test Path Traversal</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateAttack('scanner', 'Automated Scanner Tool')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 hover:border-rose-500/40 text-rose-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                                  <span className="truncate">Test Scanner Probe</span>
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Inbound Visitor Referrals */}
-                            <div className="space-y-2">
-                              <span className="text-[11px] uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-                                <Globe className="w-3.5 h-3.5" /> Simulate Inbound Visitor Referrals
-                              </span>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button
-                                  onClick={() => handleSimulateVisitor('Google Search Server', '🇺🇸 United States', 'Google Chrome', 'Windows', 'Desktop')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/25 hover:border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <Globe className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                                  <span className="truncate">+ Google Search (USA)</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateVisitor('GitHub Repository', '🇬🇧 United Kingdom', 'Mozilla Firefox', 'macOS', 'Desktop')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-500/40 text-blue-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <GithubIcon className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                                  <span className="truncate">+ GitHub Link (UK)</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateVisitor('LinkedIn Server', '🇩🇪 Germany', 'Microsoft Edge', 'Windows', 'Desktop')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 hover:border-indigo-500/40 text-indigo-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <Server className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                  <span className="truncate">+ LinkedIn (Germany)</span>
-                                </button>
-                                <button
-                                  onClick={() => handleSimulateVisitor('Direct / Mobile Safari', '🇮🇳 India', 'Apple Safari', 'iOS', 'Mobile')}
-                                  disabled={simulating}
-                                  className="px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-medium transition-all text-left flex items-center gap-2"
-                                >
-                                  <Smartphone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                  <span className="truncate">+ Mobile Safari (India)</span>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Toast notification for simulation */}
-                          {(simulationToast || testAlertMessage) && (
-                            <div className="mt-4 p-3 rounded-xl bg-slate-900/90 border border-cyan-400/30 text-white text-xs flex items-center gap-2 animate-in fade-in">
-                              <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-                              <span>{simulationToast || testAlertMessage}</span>
-                            </div>
-                          )}
-                        </div>
-              )}
-
-                        {/* 4 Metric Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                          {/* Active Online */}
-                          <div className="bg-gradient-to-br from-cyan-500/15 to-blue-600/5 border border-cyan-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(6,182,212,0.1)]">
-                            <div className="flex items-center justify-between text-white/50 mb-3">
-                              <span className="text-xs uppercase font-semibold tracking-wider">Active Explorers</span>
-                              <Users className="w-5 h-5 text-cyan-400" />
-                              {/* 4 Metric Cards */}
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {/* Active Online */}
-                                <div className="bg-gradient-to-br from-cyan-500/15 to-blue-600/5 border border-cyan-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(6,182,212,0.1)]">
-                                  <div className="flex items-center justify-between text-white/50 mb-3">
-                                    <span className="text-xs uppercase font-semibold tracking-wider">Active Explorers</span>
-                                    <Users className="w-5 h-5 text-cyan-400" />
-                                  </div>
-                                  <div className="text-3xl font-black text-white flex items-baseline gap-2">
-                                    {trafficData?.activeVisitors || 1}
-                                    <span className="text-xs font-medium text-emerald-400 flex items-center gap-1">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> live now
-                                    </span>
-                                  </div>
-                                  <p className="text-white/30 text-[11px] mt-1">Visitors in the last 15 minutes</p>
-                                </div>
-                                <div className="text-3xl font-black text-white flex items-baseline gap-2">
-                                  {trafficData?.activeVisitors || 1}
-                                  <span className="text-xs font-medium text-emerald-400 flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> live now
-                                  </span>
-
-                                  {/* Total Visits */}
-                                  <div className="bg-gradient-to-br from-purple-500/15 to-indigo-600/5 border border-purple-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(168,85,247,0.1)]">
-                                    <div className="flex items-center justify-between text-white/50 mb-3">
-                                      <span className="text-xs uppercase font-semibold tracking-wider">Total Traffic</span>
-                                      <Activity className="w-5 h-5 text-purple-400" />
-                                    </div>
-                                    <div className="text-3xl font-black text-white">
-                                      {trafficData?.totalVisits || 1}
-                                    </div>
-                                    <p className="text-white/30 text-[11px] mt-1">
-                                      Across <span className="text-purple-300 font-semibold">{trafficData?.uniqueVisitors || 1}</span> unique IP address{trafficData?.uniqueVisitors !== 1 ? 'es' : ''}
-                                    </p>
-                                  </div>
-                                  <p className="text-white/30 text-[11px] mt-1">Visitors in the last 15 minutes</p>
-
-                                  {/* Origin Servers */}
-                                  <div className="bg-gradient-to-br from-blue-500/15 to-sky-600/5 border border-blue-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(59,130,246,0.1)]">
-                                    <div className="flex items-center justify-between text-white/50 mb-3">
-                                      <span className="text-xs uppercase font-semibold tracking-wider">Origin Sources</span>
-                                      <Server className="w-5 h-5 text-blue-400" />
-                                    </div>
-                                    <div className="text-3xl font-black text-white">
-                                      {trafficData?.serverBreakdown?.length || 1}
-                                    </div>
-                                    <p className="text-white/30 text-[11px] mt-1">Direct, search engines & external links</p>
-                                  </div>
-
-                                  {/* Cyber Threats Blocked */}
-                                  <div className={`bg-gradient-to-br ${(trafficData?.totalThreats || 0) > 0
-                                      ? 'from-red-500/20 to-orange-600/10 border-red-500/30'
-                                      : 'from-emerald-500/15 to-teal-600/5 border-emerald-500/20'
-                                    } border rounded-2xl p-5 shadow-[0_4px_20px_rgba(239,68,68,0.1)]`}>
-                                    <div className="flex items-center justify-between text-white/50 mb-3">
-                                      <span className="text-xs uppercase font-semibold tracking-wider">Blocked Threats</span>
-                                      <ShieldAlert className={`w-5 h-5 ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`} />
-                                    </div>
-                                    <div className={`text-3xl font-black ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400' : 'text-emerald-300'}`}>
-                                      {trafficData?.totalThreats || 0}
-                                    </div>
-                                    <p className="text-white/30 text-[11px] mt-1">
-                                      {(trafficData?.totalThreats || 0) > 0 ? 'Alerts dispatched to Gmail' : 'Zero breaches • Shield active'}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Total Visits */}
-                                <div className="bg-gradient-to-br from-purple-500/15 to-indigo-600/5 border border-purple-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(168,85,247,0.1)]">
-                                  <div className="flex items-center justify-between text-white/50 mb-3">
-                                    <span className="text-xs uppercase font-semibold tracking-wider">Total Traffic</span>
-                                    <Activity className="w-5 h-5 text-purple-400" />
-                                    {/* Origin Servers Distribution with Visual Bars */}
-                                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-                                      <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-white font-semibold text-sm flex items-center gap-2">
-                                          <Globe className="w-4 h-4 text-cyan-400" />
-                                          Origin Servers & Inbound Traffic Distribution
-                                        </h3>
-                                        <span className="text-white/40 text-xs">Total Hits: {totalHits}</span>
-                                      </div>
-                                      <div className="text-3xl font-black text-white">
-                                        {trafficData?.totalVisits || 1}
-
-                                        <div className="space-y-3">
-                                          {trafficData?.serverBreakdown && trafficData.serverBreakdown.length > 0 ? (
-                                            trafficData.serverBreakdown.map((s: any, idx: number) => {
-                                              const pct = Math.round((s.count / totalHits) * 100);
-                                              return (
-                                                <div key={idx} className="space-y-1.5 bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                                                  <div className="flex items-center justify-between text-xs">
-                                                    <div className="flex items-center gap-2">
-                                                      <Server className="w-3.5 h-3.5 text-cyan-400" />
-                                                      <span className="text-white font-medium">{s.server}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 font-mono">
-                                                      <span className="text-cyan-300 font-semibold">{s.count} hits</span>
-                                                      <span className="text-white/40">({pct}%)</span>
-                                                    </div>
-                                                  </div>
-                                                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                    <div
-                                                      className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500"
-                                                      style={{ width: `${Math.max(5, pct)}%` }}
-                                                    />
-                                                  </div>
-                                                </div>
-                                              );
-                                            })
-                                          ) : (
-                                            <span className="text-white/30 text-xs">Direct / Localhost navigation</span>
-                                          )}
-                                        </div>
-                                        <p className="text-white/30 text-[11px] mt-1">
-                                          Across <span className="text-purple-300 font-semibold">{trafficData?.uniqueVisitors || 1}</span> unique IP address{trafficData?.uniqueVisitors !== 1 ? 'es' : ''}
-                                        </p>
-                                      </div>
-
-                                      {/* Origin Servers */}
-                                      <div className="bg-gradient-to-br from-blue-500/15 to-sky-600/5 border border-blue-500/20 rounded-2xl p-5 shadow-[0_4px_20px_rgba(59,130,246,0.1)]">
-                                        <div className="flex items-center justify-between text-white/50 mb-3">
-                                          <span className="text-xs uppercase font-semibold tracking-wider">Origin Sources</span>
-                                          <Server className="w-5 h-5 text-blue-400" />
-                                          {/* Platforms & Browsers Analytics Grid */}
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {/* Device breakdown */}
-                                            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-                                              <h4 className="text-white text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 flex items-center gap-2">
-                                                <Laptop className="w-4 h-4 text-cyan-400" /> Client Device Types
-                                              </h4>
-                                              <div className="grid grid-cols-3 gap-2">
-                                                {(trafficData?.deviceBreakdown || [
-                                                  { type: 'Desktop', count: 1 },
-                                                  { type: 'Mobile', count: 0 },
-                                                  { type: 'Tablet', count: 0 }
-                                                ]).map((d: any) => (
-                                                  <div key={d.type} className="bg-white/[0.03] p-3 rounded-xl border border-white/5 text-center">
-                                                    <div className="text-white/40 text-[11px] mb-1">{d.type}</div>
-                                                    <div className="text-lg font-bold text-white font-mono">{d.count}</div>
-                                                  </div>
-                                                ))}
-                                              </div>
-                                            </div>
-                                            <div className="text-3xl font-black text-white">
-                                              {trafficData?.serverBreakdown?.length || 1}
-
-                                              {/* Top Browsers */}
-                                              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-                                                <h4 className="text-white text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 flex items-center gap-2">
-                                                  <Globe className="w-4 h-4 text-purple-400" /> Active Browsers
-                                                </h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                  {(trafficData?.browserBreakdown && trafficData.browserBreakdown.length > 0
-                                                    ? trafficData.browserBreakdown
-                                                    : [{ name: 'Google Chrome', count: 1 }]
-                                                  ).map((b: any) => (
-                                                    <div key={b.name} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/5 text-xs text-white/80">
-                                                      <span>{b.name}</span>
-                                                      <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold text-[10px]">
-                                                        {b.count}
-                                                      </span>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              </div>
-                                              <p className="text-white/30 text-[11px] mt-1">Direct, search engines & external links</p>
-                                            </div>
-
-                                            {/* Cyber Threats Blocked */}
-                                            <div className={`bg-gradient-to-br ${(trafficData?.totalThreats || 0) > 0
-                                                ? 'from-red-500/20 to-orange-600/10 border-red-500/30'
-                                                : 'from-emerald-500/15 to-teal-600/5 border-emerald-500/20'
-                                              } border rounded-2xl p-5 shadow-[0_4px_20px_rgba(239,68,68,0.1)]`}>
-                                              <div className="flex items-center justify-between text-white/50 mb-3">
-                                                <span className="text-xs uppercase font-semibold tracking-wider">Blocked Threats</span>
-                                                <ShieldAlert className={`w-5 h-5 ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`} />
-                                                {/* Search & Threat Filter Bar */}
-                                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
-                                                  <div className="relative flex-1 max-w-md">
-                                                    <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                                                    <input
-                                                      type="text"
-                                                      placeholder="Search by IP, Route, Server, or Payload..."
-                                                      value={radarSearch}
-                                                      onChange={(e) => setRadarSearch(e.target.value)}
-                                                      className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:border-cyan-400/50 focus:outline-none transition-all font-mono"
-                                                    />
-                                                  </div>
-                                                  <div className={`text-3xl font-black ${(trafficData?.totalThreats || 0) > 0 ? 'text-red-400' : 'text-emerald-300'}`}>
-                                                    {trafficData?.totalThreats || 0}
-
-                                                    <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
-                                                      <span className="text-white/40 text-[11px] mr-1 flex items-center gap-1">
-                                                        <Filter className="w-3 h-3" /> Threat Filter:
-                                                      </span>
-                                                      {['ALL', 'SQLI', 'XSS', 'TRAVERSAL', 'SCANNER'].map((filter) => (
-                                                        <button
-                                                          key={filter}
-                                                          onClick={() => setThreatFilter(filter)}
-                                                          className={`px-2.5 py-1 rounded-lg font-mono text-[11px] font-semibold transition-all ${threatFilter === filter
-                                                              ? 'bg-red-500/25 text-red-300 border border-red-500/40'
-                                                              : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10'
-                                                            }`}
-                                                        >
-                                                          {filter}
-                                                        </button>
-                                                      ))}
-                                                    </div>
-                                                    <p className="text-white/30 text-[11px] mt-1">
-                                                      {(trafficData?.totalThreats || 0) > 0 ? 'Alerts dispatched to Gmail' : 'Zero breaches • Shield active'}
-                                                    </p>
-                                                  </div>
-                                                </div>
-
-                                                {/* Origin Servers Breakdown */}
-                                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-                                                  <h3 className="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-                                                    <Globe className="w-4 h-4 text-cyan-400" />
-                                                    Origin Servers & Inbound Referrers
-                                                  </h3>
-                                                  <div className="flex flex-wrap gap-2.5">
-                                                    {trafficData?.serverBreakdown && trafficData.serverBreakdown.length > 0 ? (
-                                                      trafficData.serverBreakdown.map((s: any, idx: number) => (
-                                                        <div
-                                                          key={idx}
-                                                          className="px-4 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 flex items-center gap-2.5 transition-all"
-                                                        >
-                                                          <Server className="w-3.5 h-3.5 text-cyan-400" />
-                                                          <span className="text-white/80 text-xs font-medium">{s.server}</span>
-                                                          <span className="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-bold">
-                                                            {s.count} hits
-                                                          </span>
-                                                          {/* Security Threats Radar Table */}
-                                                          <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
-                                                            <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
-                                                              <div className="flex items-center gap-2.5">
-                                                                <ShieldAlert className="w-5 h-5 text-red-400" />
-                                                                <div>
-                                                                  <h3 className="text-white font-semibold text-sm">Intercepted Security Intrusions & Attack Log</h3>
-                                                                  <p className="text-white/30 text-[11px]">
-                                                                    Blocked SQL Injection, XSS, Path Traversal, and Scanners (Dispatched to <span className="text-cyan-400 font-mono">starailab.info@gmail.com</span>)
-                                                                  </p>
-                                                                </div>
-                                                                ))
-                                                              </div>
-                                                              <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${filteredAlerts.length > 0
-                                                                  ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                                                                  : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                                                }`}>
-                                                                {filteredAlerts.length} Incident{filteredAlerts.length !== 1 ? 's' : ''}
-                                                              </span>
-                                                            </div>
-
-                                                            {filteredAlerts.length > 0 ? (
-                                                              <div className="overflow-x-auto">
-                                                                <table className="w-full text-left text-xs text-white/70">
-                                                                  <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
-                                                                    <tr>
-                                                                      <th className="px-6 py-3 font-semibold">Threat Class</th>
-                                                                      <th className="px-6 py-3 font-semibold">Attacker IP</th>
-                                                                      <th className="px-6 py-3 font-semibold">Target Route</th>
-                                                                      <th className="px-6 py-3 font-semibold">Payload Snippet</th>
-                                                                      <th className="px-6 py-3 font-semibold">Time</th>
-                                                                      <th className="px-6 py-3 font-semibold">Email Alert</th>
-                                                                    </tr>
-                                                                  </thead>
-                                                                  <tbody className="divide-y divide-white/5">
-                                                                    {filteredAlerts.map((alert: any) => (
-                                                                      <tr key={alert.id} className="hover:bg-red-500/[0.04] transition-colors">
-                                                                        <td className="px-6 py-3.5">
-                                                                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${alert.threatType?.toUpperCase().includes('SQL')
-                                                                              ? 'bg-red-500/20 border-red-500/40 text-red-300'
-                                                                              : alert.threatType?.toUpperCase().includes('XSS')
-                                                                                ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
-                                                                                : alert.threatType?.toUpperCase().includes('TRAVERSAL')
-                                                                                  ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                                                                                  : 'bg-rose-500/20 border-rose-500/40 text-rose-300'
-                                                                            }`}>
-                                                                            {alert.threatType}
-                                                                          </span>
-                                                                        </td>
-                                                                        <td className="px-6 py-3.5 font-mono text-cyan-300 font-semibold">{alert.ip}</td>
-                                                                        <td className="px-6 py-3.5 font-mono text-amber-300">
-                                                                          <span className="text-white/40 font-sans mr-1">{alert.method}</span>
-                                                                          {alert.url}
-                                                                        </td>
-                                                                        <td className="px-6 py-3.5 font-mono text-[11px] text-red-200/90 max-w-xs truncate" title={alert.payload}>
-                                                                          {alert.payload || 'N/A'}
-                                                                        </td>
-                                                                        <td className="px-6 py-3.5 text-white/40 text-[11px] whitespace-nowrap font-mono">
-                                                                          {new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                                                        </td>
-                                                                        <td className="px-6 py-3.5">
-                                                                          <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                                                                            <CheckCircle className="w-3 h-3" /> Dispatched
-                                                                          </span>
-                                                                        </td>
-                                                                      </tr>
-                                                                    ))}
-                                                                  </tbody>
-                                                                </table>
-                                                              </div>
-                                                            ) : (
-                    <span className="text-white/30 text-xs">Direct / Localhost navigation</span>
-                    <div className="text-center py-12">
-                      <ShieldCheck className="w-10 h-10 text-emerald-400/40 mx-auto mb-2" />
-                      <p className="text-white/50 text-sm font-medium">No Security Breaches Matching Filter</p>
-                      <p className="text-white/20 text-xs mt-0.5">The Star AI Lab Shield is actively guarding and inspecting all HTTP requests.</p>
+              {/* Security Threats Radar Table */}
+              <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldAlert className="w-5 h-5 text-red-400" />
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Intercepted Security Intrusions & Attack Log</h3>
+                      <p className="text-white/30 text-[11px]">
+                        Blocked SQL Injection, XSS, Path Traversal, and Scanners (Dispatched to <span className="text-cyan-400 font-mono">starailab.info@gmail.com</span>)
+                      </p>
                     </div>
-                                                            )}
-                                                          </div>
-                                                        </div>
-
-              {/* Security Threats Radar Table */ }
-                                                        < div className = "bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden" >
-                                                        <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
-                                                          <div className="flex items-center gap-2.5">
-                                                            <ShieldAlert className="w-5 h-5 text-red-400" />
-                                                            <div>
-                                                              <h3 className="text-white font-semibold text-sm">Intercepted Security Intrusions & Attack Log</h3>
-                                                              <p className="text-white/30 text-[11px]">
-                                                                Blocked SQL Injection, XSS, Path Traversal, and Scanners (Dispatched to <span className="text-cyan-400 font-mono">starailab.info@gmail.com</span>)
-                                                              </p>
-                                                              {/* Live Visitor Log Table with Real Geolocation & Country Flags */}
-                                                              <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
-                                                                <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
-                                                                  <div className="flex items-center gap-2.5">
-                                                                    <Eye className="w-5 h-5 text-cyan-400" />
-                                                                    <div>
-                                                                      <h3 className="text-white font-semibold text-sm">Live Visitor Flow & Server Referrer Stream</h3>
-                                                                      <p className="text-white/30 text-[11px]">Real-time unmasked IP addresses, device user-agents, and location origins</p>
-                                                                    </div>
-                                                                  </div>
-                                                                  <span className="text-white/40 text-xs font-mono">
-                                                                    Showing {filteredVisits.length} visits
-                                                                  </span>
-                                                                </div>
-                                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${(trafficData?.securityAlerts?.length || 0) > 0
-                                                                    ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                                                                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                                                  }`}>
-                                                                  {(trafficData?.securityAlerts?.length || 0) > 0 ? `${trafficData.securityAlerts.length} Incidents` : 'System Secure'}
-                                                                </span>
-                                                              </div>
-
-                                                              {trafficData?.securityAlerts && trafficData.securityAlerts.length > 0 ? (
-                                                                <div className="overflow-x-auto">
-                                                                  <table className="w-full text-left text-xs text-white/70">
-                                                                    <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
-                                                                      <tr>
-                                                                        <th className="px-6 py-3 font-semibold">Threat Class</th>
-                                                                        <th className="px-6 py-3 font-semibold">Attacker IP</th>
-                                                                        <th className="px-6 py-3 font-semibold">Target Route</th>
-                                                                        <th className="px-6 py-3 font-semibold">Payload Snippet</th>
-                                                                        <th className="px-6 py-3 font-semibold">Time</th>
-                                                                        <th className="px-6 py-3 font-semibold">Email Alert</th>
-                                                                      </tr>
-                                                                    </thead>
-                                                                    <tbody className="divide-y divide-white/5">
-                                                                      {trafficData.securityAlerts.map((alert: any) => (
-                                                                        <tr key={alert.id} className="hover:bg-red-500/[0.04] transition-colors">
-                                                                          <td className="px-6 py-3.5">
-                                                                            <span className="px-2.5 py-1 rounded-md bg-red-500/15 border border-red-500/30 text-red-300 text-[10px] font-bold uppercase tracking-wider">
-                                                                              {alert.threatType}
-                                                                            </span>
-                                                                          </td>
-                                                                          <td className="px-6 py-3.5 font-mono text-cyan-300 font-semibold">{alert.ip}</td>
-                                                                          <td className="px-6 py-3.5 font-mono text-amber-300">
-                                                                            <span className="text-white/40 font-sans mr-1">{alert.method}</span>
-                                                                            {alert.url}
-                                                                          </td>
-                                                                          <td className="px-6 py-3.5 font-mono text-[11px] text-red-200/90 max-w-xs truncate" title={alert.payload}>
-                                                                            {alert.payload || 'N/A'}
-                                                                          </td>
-                                                                          <td className="px-6 py-3.5 text-white/40 text-[11px] whitespace-nowrap">
-                                                                            {new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                                                          </td>
-                                                                          <td className="px-6 py-3.5">
-                                                                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                                                                              <CheckCircle className="w-3 h-3" /> Dispatched
-                                                                            </span>
-                                                                          </td>
-                                                                          {filteredVisits.length > 0 ? (
-                                                                            <div className="overflow-x-auto">
-                                                                              <table className="w-full text-left text-xs text-white/70">
-                                                                                <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
-                                                                                  <tr>
-                                                                                    <th className="px-6 py-3 font-semibold">Visitor IP</th>
-                                                                                    <th className="px-6 py-3 font-semibold">Origin Server</th>
-                                                                                    <th className="px-6 py-3 font-semibold">Device & Browser</th>
-                                                                                    <th className="px-6 py-3 font-semibold">Target Route</th>
-                                                                                    <th className="px-6 py-3 font-semibold">Location</th>
-                                                                                    <th className="px-6 py-3 font-semibold">Time</th>
-                                                                                  </tr>
-                        ))}
-                                                                                </tbody>
-                                                                              </table>
-                                                                            </div>
-                                                                          ) : (
-                                                                            <div className="text-center py-12">
-                                                                              <ShieldCheck className="w-10 h-10 text-emerald-400/40 mx-auto mb-2" />
-                                                                              <p className="text-white/50 text-sm font-medium">No Security Breaches Detected</p>
-                                                                              <p className="text-white/20 text-xs mt-0.5">The Star AI Lab Shield is active and inspecting all incoming HTTP traffic.</p>
-                                                                            </div>
-                                                                          )}
-                                                                        </div>
-
-              {/* Live Visitor Log Table */ }
-                                                                        < div className = "bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden" >
-                                                                        <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
-                                                                          <div className="flex items-center gap-2.5">
-                                                                            <Eye className="w-5 h-5 text-cyan-400" />
-                                                                            <div>
-                                                                              <h3 className="text-white font-semibold text-sm">Live Visitor Flow & Server Referrer Stream</h3>
-                                                                              <p className="text-white/30 text-[11px]">Real-time unmasked IP addresses, device user-agents, and location origins</p>
-                                                                            </thead>
-                                                                            <tbody className="divide-y divide-white/5">
-                                                                              {filteredVisits.map((visit: any) => (
-                                                                                <tr key={visit.id} className="hover:bg-white/[0.02] transition-colors">
-                                                                                  <td className="px-6 py-3 font-mono text-cyan-300 font-semibold">{visit.ip}</td>
-                                                                                  <td className="px-6 py-3">
-                                                                                    <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-medium">
-                                                                                      {visit.serverSource}
-                                                                                    </span>
-                                                                                  </td>
-                                                                                  <td className="px-6 py-3 text-white/60">
-                                                                                    <span className="text-white/80">{visit.browser}</span>
-                                                                                    <span className="text-white/30 mx-1">•</span>
-                                                                                    <span>{visit.os} ({visit.device})</span>
-                                                                                  </td>
-                                                                                  <td className="px-6 py-3 font-mono text-purple-300">{visit.path}</td>
-                                                                                  <td className="px-6 py-3 text-white/70 font-medium">{visit.location}</td>
-                                                                                  <td className="px-6 py-3 text-white/40 text-[11px] whitespace-nowrap font-mono">
-                                                                                    {new Date(visit.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                                                                  </td>
-                                                                                </tr>
-                                                                              ))}
-                                                                            </tbody>
-                                                                          </table>
-                                                                        </div>
                   </div>
-                                                                    <span className="text-white/40 text-xs">
-                                                                      Showing last {trafficData?.recentVisits?.length || 0} visits
-                                                                    </span>
-                                                                    ) : (
-                                                                    <div className="text-center py-12">
-                                                                      <Activity className="w-10 h-10 text-white/10 mx-auto mb-2 animate-pulse" />
-                                                                      <p className="text-white/40 text-sm">No visitor records matching search criteria.</p>
-                                                                    </div>
-                  )}
-                                                                </div>
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                    filteredAlerts.length > 0
+                      ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  }`}>
+                    {filteredAlerts.length > 0 ? `${filteredAlerts.length} Incidents` : 'System Secure'}
+                  </span>
+                </div>
 
-                {trafficData?.recentVisits && trafficData.recentVisits.length > 0 ? (
-                                                                <div className="overflow-x-auto">
-                                                                  <table className="w-full text-left text-xs text-white/70">
-                                                                    <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
-                                                                      <tr>
-                                                                        <th className="px-6 py-3 font-semibold">Visitor IP</th>
-                                                                        <th className="px-6 py-3 font-semibold">Origin Server</th>
-                                                                        <th className="px-6 py-3 font-semibold">Device & Browser</th>
-                                                                        <th className="px-6 py-3 font-semibold">Target Route</th>
-                                                                        <th className="px-6 py-3 font-semibold">Location</th>
-                                                                        <th className="px-6 py-3 font-semibold">Time</th>
-                                                                      </tr>
-                                                                    </thead>
-                                                                    <tbody className="divide-y divide-white/5">
-                                                                      {trafficData.recentVisits.map((visit: any) => (
-                                                                        <tr key={visit.id} className="hover:bg-white/[0.02] transition-colors">
-                                                                          <td className="px-6 py-3 font-mono text-cyan-300 font-semibold">{visit.ip}</td>
-                                                                          <td className="px-6 py-3">
-                                                                            <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px]">
-                                                                              {visit.serverSource}
-                                                                            </span>
-                                                                          </td>
-                                                                          <td className="px-6 py-3 text-white/60">
-                                                                            <span className="text-white/80">{visit.browser}</span>
-                                                                            <span className="text-white/30 mx-1">•</span>
-                                                                            <span>{visit.os} ({visit.device})</span>
-                                                                          </td>
-                                                                          <td className="px-6 py-3 font-mono text-purple-300">{visit.path}</td>
-                                                                          <td className="px-6 py-3 text-white/50">{visit.location}</td>
-                                                                          <td className="px-6 py-3 text-white/30 text-[11px] whitespace-nowrap">
-                                                                            {new Date(visit.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                                                          </td>
-                                                                        </tr>
-                                                                      ))}
-                                                                    </tbody>
-                                                                  </table>
-                                                                </div>
-                                                              ) : (
-                                                                <div className="text-center py-12">
-                                                                  <Activity className="w-10 h-10 text-white/10 mx-auto mb-2 animate-pulse" />
-                                                                  <p className="text-white/40 text-sm">Listening for live visitor pings...</p>
-                                                                </div>
-                                                              )}
-                                                            </div>
-                                                            );
-          })()}
+                {filteredAlerts.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-white/70">
+                      <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
+                        <tr>
+                          <th className="px-6 py-3 font-semibold">Threat Class</th>
+                          <th className="px-6 py-3 font-semibold">Attacker IP</th>
+                          <th className="px-6 py-3 font-semibold">Target Route</th>
+                          <th className="px-6 py-3 font-semibold">Payload Snippet</th>
+                          <th className="px-6 py-3 font-semibold">Time</th>
+                          <th className="px-6 py-3 font-semibold">Email Alert</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {filteredAlerts.map((alert: any) => (
+                          <tr key={alert.id} className="hover:bg-red-500/[0.04] transition-colors">
+                            <td className="px-6 py-3.5">
+                              <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                                alert.threatType?.toUpperCase().includes('SQL')
+                                  ? 'bg-red-500/20 border-red-500/40 text-red-300'
+                                  : alert.threatType?.toUpperCase().includes('XSS')
+                                    ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
+                                    : alert.threatType?.toUpperCase().includes('TRAVERSAL')
+                                      ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
+                                      : 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                              }`}>
+                                {alert.threatType}
+                              </span>
+                            </td>
+                            <td className="px-6 py-3.5 font-mono text-cyan-300 font-semibold">{alert.ip}</td>
+                            <td className="px-6 py-3.5 font-mono text-amber-300">
+                              <span className="text-white/40 font-sans mr-1">{alert.method}</span>
+                              {alert.url}
+                            </td>
+                            <td className="px-6 py-3.5 font-mono text-[11px] text-red-200/90 max-w-xs truncate" title={alert.payload}>
+                              {alert.payload || 'N/A'}
+                            </td>
+                            <td className="px-6 py-3.5 text-white/40 text-[11px] whitespace-nowrap font-mono">
+                              {new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                            </td>
+                            <td className="px-6 py-3.5">
+                              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
+                                <CheckCircle className="w-3 h-3" /> Dispatched
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <ShieldCheck className="w-10 h-10 text-emerald-400/40 mx-auto mb-2" />
+                    <p className="text-white/50 text-sm font-medium">No Security Breaches Matching Filter</p>
+                    <p className="text-white/20 text-xs mt-0.5">The Star AI Lab Shield is actively guarding and inspecting all HTTP requests.</p>
+                  </div>
+                )}
+              </div>
 
-                                                          </div>
-          )}
+              {/* Live Visitor Flow & Server Referrer Stream */}
+              <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <Eye className="w-5 h-5 text-cyan-400" />
+                    <div>
+                      <h3 className="text-white font-semibold text-sm">Live Visitor Flow & Server Referrer Stream</h3>
+                      <p className="text-white/30 text-[11px]">Real-time unmasked IP addresses, device user-agents, and location origins</p>
+                    </div>
+                  </div>
+                  <span className="text-white/40 text-xs font-mono">
+                    Showing {filteredVisits.length} visits
+                  </span>
+                </div>
 
-                                                          {/* ── VIDEOS TAB ── */}
+                {filteredVisits.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-white/70">
+                      <thead className="bg-white/[0.03] text-white/40 uppercase tracking-wider text-[10px] border-b border-white/5">
+                        <tr>
+                          <th className="px-6 py-3 font-semibold">Visitor IP</th>
+                          <th className="px-6 py-3 font-semibold">Origin Server</th>
+                          <th className="px-6 py-3 font-semibold">Device & Browser</th>
+                          <th className="px-6 py-3 font-semibold">Target Route</th>
+                          <th className="px-6 py-3 font-semibold">Location</th>
+                          <th className="px-6 py-3 font-semibold">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {filteredVisits.map((visit: any) => (
+                          <tr key={visit.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="px-6 py-3 font-mono text-cyan-300 font-semibold">{visit.ip}</td>
+                            <td className="px-6 py-3">
+                              <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-medium">
+                                {visit.serverSource}
+                              </span>
+                            </td>
+                            <td className="px-6 py-3 text-white/60">
+                              <span className="text-white/80">{visit.browser}</span>
+                              <span className="text-white/30 mx-1">•</span>
+                              <span>{visit.os} ({visit.device})</span>
+                            </td>
+                            <td className="px-6 py-3 font-mono text-purple-300">{visit.path}</td>
+                            <td className="px-6 py-3 text-white/70 font-medium">{visit.location}</td>
+                            <td className="px-6 py-3 text-white/40 text-[11px] whitespace-nowrap font-mono">
+                              {new Date(visit.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Activity className="w-10 h-10 text-white/10 mx-auto mb-2 animate-pulse" />
+                    <p className="text-white/40 text-sm">No visitor records matching search criteria.</p>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          );
+        })()}
+
+        {/* ── VIDEOS TAB ── */}
                                                           {activeTab === 'videos' && (
                                                             <div className="space-y-6">
                                                               <p className="text-white/40 text-sm mb-4">

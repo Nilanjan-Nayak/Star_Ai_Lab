@@ -9,10 +9,19 @@ backend/dist/
 dist/
 dist-ssr/
 
-# Environment variables
+# Environment variables & templates
 .env
-frontend/.env
+.env.*
+.env.example
+*.env
+*.env.*
+*.env.example
 backend/.env
+backend/.env.*
+backend/.env.example
+frontend/.env
+frontend/.env.*
+frontend/.env.example
 *.local
 .env.local
 .env.development
