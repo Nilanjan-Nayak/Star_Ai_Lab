@@ -1,196 +1,138 @@
-import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp, Globe, ArrowRight } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { Reveal, useCosmos } from './SectionKit';
+
+type FooterLink = { name: string; action?: () => void; href?: string };
 
 const Footer = () => {
   const { getContent } = useContent();
+  useCosmos();
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToSection = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const footerLinks = {
-    company: [
+  const footerLinks: Record<string, FooterLink[]> = {
+    Company: [
       { name: 'About Us', action: () => scrollToSection('about') },
       { name: 'Our Projects', action: () => scrollToSection('projects') },
       { name: 'Contact', action: () => scrollToSection('contact') },
-      { name: 'Careers', href: '#' }
+      { name: 'Careers', href: '#' },
     ],
-    services: [
+    Services: [
       { name: 'AI Development', href: '#' },
       { name: 'Machine Learning', href: '#' },
       { name: 'Data Science', href: '#' },
-      { name: 'Consulting', href: '#' }
+      { name: 'Consulting', href: '#' },
     ],
-    resources: [
+    Resources: [
       { name: 'Blog', href: '#' },
       { name: 'Documentation', href: '#' },
       { name: 'Case Studies', href: '#' },
-      { name: 'White Papers', href: '#' }
-    ]
+      { name: 'White Papers', href: '#' },
+    ],
   };
 
   const socialLinks = [
-    {
-      icon: <Globe className="h-5 w-5" />,
-      href: 'https://nilanjan-nayak.my-board.org',
-      name: 'Website',
-      hover: 'hover:text-cyan-400 hover:bg-cyan-500/20'
-    },
-    {
-      icon: <Github className="h-5 w-5" />,
-      href: 'https://github.com/Nilanjan-Nayak',
-      name: 'GitHub',
-      hover: 'hover:text-gray-300 hover:bg-gray-800/50'
-    },
-    {
-      icon: <Linkedin className="h-5 w-5" />,
-      href: 'https://www.linkedin.com/in/nilanjan-nayak-73b475322/',
-      name: 'LinkedIn',
-      hover: 'hover:text-blue-400 hover:bg-blue-500/20'
-    },
-    {
-      icon: <Twitter className="h-5 w-5" />,
-      href: 'https://twitter.com',
-      name: 'Twitter',
-      hover: 'hover:text-cyan-400 hover:bg-cyan-500/20'
-    },
-    {
-      icon: <Mail className="h-5 w-5" />,
-      href: 'mailto:nayaknilanjan2@gmail.com',
-      name: 'Email',
-      hover: 'hover:text-blue-400 hover:bg-blue-500/20'
-    }
+    { icon: <Globe className="h-5 w-5" />, href: 'https://nilanjan-nayak.my-board.org', name: 'Website', hover: 'hover:text-cyan-300 hover:border-cyan-400/50' },
+    { icon: <Github className="h-5 w-5" />, href: 'https://github.com/Nilanjan-Nayak', name: 'GitHub', hover: 'hover:text-white hover:border-white/40' },
+    { icon: <Linkedin className="h-5 w-5" />, href: 'https://www.linkedin.com/in/nilanjan-nayak-73b475322/', name: 'LinkedIn', hover: 'hover:text-blue-300 hover:border-blue-400/50' },
+    { icon: <Twitter className="h-5 w-5" />, href: 'https://twitter.com', name: 'Twitter', hover: 'hover:text-cyan-300 hover:border-cyan-400/50' },
+    { icon: <Mail className="h-5 w-5" />, href: 'mailto:nayaknilanjan2@gmail.com', name: 'Email', hover: 'hover:text-blue-300 hover:border-blue-400/50' },
   ];
 
+  const linkClass = 'inline-block text-blue-200/75 transition-all duration-300 hover:translate-x-1 hover:text-white';
+
   return (
-    <footer className="bg-premium-void text-white relative">
-      {/* Premium Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-cyan-400/5 rounded-full blur-3xl"></div>
+    <footer className="relative overflow-hidden text-white" style={{ background: 'linear-gradient(180deg, rgba(2,4,10,0) 0%, rgba(2,4,10,.8) 35%, #000 100%)' }}>
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-24 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-blue-600/10 blur-3xl" />
       </div>
 
-      {/* Main Footer Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand & Social Section */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-premium-gradient">Star AI Lab</span>
-            </div>
-            <p className="text-blue-200/80 max-w-sm">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+
+        {/* Links */}
+        <div className="grid grid-cols-1 gap-10 py-16 md:grid-cols-2 lg:grid-cols-5">
+          <div className="space-y-5 lg:col-span-2">
+            <span className="kit-display kit-gradient-text kit-gradient-inline text-3xl font-bold">Star AI Lab</span>
+            <p className="max-w-sm leading-relaxed text-blue-200/75">
               Empowering the future with cutting-edge artificial intelligence and innovative software solutions.
             </p>
-            <div className="flex space-x-3 pt-2">
-              {socialLinks.map((social, index) => (
+            <div className="flex gap-3 pt-1">
+              {socialLinks.map((s) => (
                 <a
-                  key={index}
-                  href={social.href}
+                  key={s.name}
+                  href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`p-2.5 rounded-lg bg-white/5 border border-white/10 ${social.hover} transition-all duration-300 transform hover:scale-110`}
-                  title={social.name}
+                  title={s.name}
+                  aria-label={s.name}
+                  className={`rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-blue-200/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_22px_rgba(34,211,238,0.18)] ${s.hover}`}
                 >
-                  {social.icon}
+                  {s.icon}
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Company Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link, index) => (
-                <li key={index}>
-                  {link.action ? (
-                    <button
-                      onClick={link.action}
-                      className="text-blue-200/80 hover:text-white transition-colors duration-300 hover:translate-x-1 transform"
-                    >
-                      {link.name}
-                    </button>
-                  ) : (
-                    <a
-                      href={link.href}
-                      className="text-blue-200/80 hover:text-white transition-colors duration-300 hover:translate-x-1 transform inline-block"
-                    >
-                      {link.name}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {Object.entries(footerLinks).map(([heading, links]) => (
+            <div key={heading}>
+              <h3 className="kit-display mb-5 text-lg font-semibold text-white">{heading}</h3>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    {link.action ? (
+                      <button onClick={link.action} className={linkClass}>{link.name}</button>
+                    ) : link.href && link.href !== '#' ? (
+                      <a href={link.href} className={linkClass}>{link.name}</a>
+                    ) : (
+                      /* placeholder – not a real page yet */
+                      <span className="inline-block cursor-default text-blue-200/40">{link.name}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
 
-          {/* Services Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Services</h3>
-            <ul className="space-y-3">
-              {footerLinks.services.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-blue-200/80 hover:text-white transition-colors duration-300 hover:translate-x-1 transform inline-block"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Resources</h3>
-            <ul className="space-y-3">
-              {footerLinks.resources.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-blue-200/80 hover:text-white transition-colors duration-300 hover:translate-x-1 transform inline-block"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
+        {/* Wordmark watermark */}
+        <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden text-center">
+          <div
+            className="kit-display font-bold leading-[0.8] tracking-tight"
+            style={{
+              fontSize: 'clamp(3.5rem, 15vw, 13rem)',
+              background: 'linear-gradient(180deg, rgba(96,165,250,0.28), rgba(2,4,10,0) 85%)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            STAR AI LAB
           </div>
         </div>
       </div>
 
-      {/* Bottom Section */}
-      <div className="relative z-10 border-t border-blue-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center text-blue-200/80 mb-4 md:mb-0">
-              <span>{getContent('footer', 'copyright', '© 2024 Star AI Labs. Made with')}</span>
-              <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
-              <span> Nilanjan</span>
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <a href="#" className="text-blue-200/80 hover:text-white transition-colors duration-300">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-blue-200/80 hover:text-white transition-colors duration-300">
-                Terms of Service
-              </a>
-              <button
-                onClick={scrollToTop}
-                className="p-3 bg-gradient-to-r from-blue-600 to-cyan-400 hover:from-cyan-400 hover:to-blue-600 rounded-lg transition-all duration-300 group shadow-lg hover:shadow-xl hover:scale-110"
-                title="Back to top"
-              >
-                <ArrowUp className="h-4 w-4 group-hover:transform group-hover:-translate-y-1 transition-transform duration-300" />
-              </button>
-            </div>
+      {/* Bottom bar */}
+      <div className="relative z-10 border-t border-blue-500/20 bg-black/40 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row lg:px-8">
+          <div className="flex items-center text-blue-200/75">
+            <span>{getContent('footer', 'copyright', `© ${new Date().getFullYear()} Star AI Labs. Made with`)}</span>
+            <Heart className="mx-1 h-4 w-4 animate-pulse text-red-400" />
+            <span> Nilanjan</span>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <span className="cursor-default text-blue-200/40">Privacy Policy</span>
+            <span className="cursor-default text-blue-200/40">Terms of Service</span>
+            <button
+              onClick={scrollToTop}
+              title="Back to top"
+              aria-label="Back to top"
+              className="group rounded-xl bg-gradient-to-r from-blue-600 to-cyan-400 p-3 shadow-lg transition-all duration-300 hover:scale-110 hover:from-cyan-400 hover:to-blue-600 hover:shadow-cyan-400/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+            >
+              <ArrowUp className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-1" />
+            </button>
           </div>
         </div>
       </div>

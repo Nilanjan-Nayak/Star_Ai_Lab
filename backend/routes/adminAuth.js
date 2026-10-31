@@ -20,7 +20,7 @@ const sendOtpEmail = async (toEmail, otpCode) => {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
-  if (!emailUser || !emailPass) {
+  if (!emailUser || !emailPass || emailUser === 'your-email@gmail.com' || emailPass === 'your-app-password') {
     console.log('⚠️  EMAIL_USER and EMAIL_PASS not configured in .env. Skipping email dispatch.');
     return false;
   }
@@ -234,16 +234,19 @@ router.post('/verify-face', async (req, res) => {
 
       const otpCode = generateOtp();
       await adminStorage.saveOtp(admin.email, otpCode);
-      await sendOtpEmail(admin.email, otpCode);
+      const emailSent = await sendOtpEmail(admin.email, otpCode);
 
       console.log(`\n========================================`);
       console.log(`🔑 DEV / TRAINED DATASET ADMIN OTP: [ ${otpCode} ]`);
       console.log(`========================================\n`);
 
       return res.json({
-        message: 'All dataset face vectors trained and saved successfully! OTP sent to your email.',
+        message: emailSent
+          ? 'All dataset face vectors trained and saved successfully! OTP sent to your email.'
+          : 'Dataset face vectors trained and saved! OTP generated.',
         firstTimeSetup: true,
-        email: maskedEmail
+        email: maskedEmail,
+        devOtp: otpCode
       });
     }
 
@@ -277,16 +280,19 @@ router.post('/verify-face', async (req, res) => {
 
       const otpCode = generateOtp();
       await adminStorage.saveOtp(admin.email, otpCode);
-      await sendOtpEmail(admin.email, otpCode);
+      const emailSent = await sendOtpEmail(admin.email, otpCode);
 
       console.log(`\n========================================`);
       console.log(`🔑 DEV / MASTER FACE VECTOR ENROLLED OTP: [ ${otpCode} ]`);
       console.log(`========================================\n`);
 
       return res.json({
-        message: 'Master face vector enrolled! OTP sent to your email.',
+        message: emailSent
+          ? 'Master face vector enrolled! OTP sent to your email.'
+          : 'Master face vector enrolled! OTP generated.',
         firstTimeSetup: true,
-        email: maskedEmail
+        email: maskedEmail,
+        devOtp: otpCode
       });
     }
 
@@ -317,15 +323,18 @@ router.post('/verify-face', async (req, res) => {
       // Generate OTP
       const otpCode = generateOtp();
       await adminStorage.saveOtp(admin.email, otpCode);
-      await sendOtpEmail(admin.email, otpCode);
+      const emailSent = await sendOtpEmail(admin.email, otpCode);
 
       console.log(`\n========================================`);
       console.log(`🔑 DEV / VERIFIED ADMIN OTP: [ ${otpCode} ]`);
       console.log(`========================================\n`);
 
       return res.json({
-        message: 'Face verified successfully! OTP sent to your email.',
-        email: maskedEmail
+        message: emailSent
+          ? 'Face verified successfully! OTP sent to your email.'
+          : 'Face verified successfully! OTP generated.',
+        email: maskedEmail,
+        devOtp: otpCode
       });
     }
 
@@ -441,9 +450,9 @@ router.post('/resend-otp', async (req, res) => {
     console.log(`========================================\n`);
 
     if (sent) {
-      res.json({ message: `New OTP code sent to ${admin.email}` });
+      res.json({ message: `New OTP code sent to ${admin.email}`, devOtp: otpCode });
     } else {
-      res.json({ message: `New OTP code generated: [ ${otpCode} ] (Console log)` });
+      res.json({ message: `New OTP code generated: [ ${otpCode} ]`, devOtp: otpCode });
     }
   } catch (error) {
     console.error('Resend OTP error:', error);

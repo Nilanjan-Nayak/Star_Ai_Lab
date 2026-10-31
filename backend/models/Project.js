@@ -51,12 +51,42 @@ const ProjectSchema = new mongoose.Schema({
     default: false
   },
   startDate: {
-    type: Date,
-    default: Date.now
+    type: String,
+    default: ''
   },
   endDate: {
     type: Date
   },
+  projectType: {
+    type: String,
+    enum: ['Solo Project', 'Team Project', 'Group Collaboration'],
+    default: 'Solo Project'
+  },
+  howCompleted: {
+    type: String,
+    default: ''
+  },
+  toolsUsed: [{
+    type: String,
+    trim: true
+  }],
+  futureScope: [{
+    type: String,
+    trim: true
+  }],
+  teamMembers: [{
+    name: { type: String, required: true },
+    role: { type: String, default: 'Contributor' },
+    contribution: { type: String, default: '' },
+    avatar: { type: String, default: '' },
+    github: { type: String, default: '' }
+  }],
+  timelinePhases: [{
+    phase: { type: String, default: '' },
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    completed: { type: Boolean, default: false }
+  }],
   tags: [{
     type: String,
     trim: true

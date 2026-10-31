@@ -3,7 +3,7 @@
     "_id": "65a000000000000000000001",
     "id": "super-admin-001",
     "username": "nilanjan",
-    "email": "nilanjannayak00@gmail.com",
+    "email": "starailab.info@gmail.com",
     "role": "admin",
     "isSuperAdmin": true,
     "faceDescriptor": [
@@ -136,8 +136,8 @@
       0.06869880110025406,
       0.07180990278720856
     ],
-    "otpAttempts": 2,
-    "lastOtpRequest": "2026-08-15T21:22:21.046Z",
+    "otpAttempts": 5,
+    "lastOtpRequest": "2026-10-30T11:31:32.139Z",
     "isActive": true,
     "faceDescriptors": [
       [

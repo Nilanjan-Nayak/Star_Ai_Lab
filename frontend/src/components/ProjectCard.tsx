@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
-import { ExternalLink, Github, ArrowUpRight, CheckCircle, Clock, Star, Layers } from 'lucide-react';
-
-interface Project {
-  _id: string;
-  title: string;
-  description: string;
-  shortDescription: string;
-  technologies: string[];
-  category: string;
-  status: string;
-  imageUrl?: string;
-  githubUrl?: string;
-  liveUrl?: string;
-  featured: boolean;
-  startDate: string;
-  tags: string[];
-}
+import { ExternalLink, Github, ArrowUpRight, CheckCircle, Clock, Star, Layers, Sparkles } from 'lucide-react';
+import { Project } from '../types/project';
 
 interface ProjectCardProps {
   project: Project;
+  onClick?: () => void;
 }
 
 /* ─── Per-category design tokens ─────────────────────────────── */
@@ -48,7 +34,7 @@ const STATUS: Record<string, { label: string; icon: React.ReactNode; cls: string
 const FALLBACK = 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=800&q=80';
 
 /* ─── Card ─────────────────────────────────────────────────────── */
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
   const { title, shortDescription, technologies, category, status,
           imageUrl, githubUrl, liveUrl, featured, startDate } = project;
 
@@ -66,15 +52,30 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   const dateStr = new Date(startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <article
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
       className="group relative flex flex-col h-full rounded-3xl overflow-hidden cursor-pointer select-none
                  transition-all duration-500 ease-out
                  hover:-translate-y-1.5 focus-within:outline-none"
       style={{
         background: 'linear-gradient(160deg, rgba(13,19,38,0.98) 0%, rgba(6,10,22,1) 100%)',
         boxShadow: hovered
-          ? `0 0 0 1px rgba(${c.glowColor},0.35), 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(${c.glowColor},0.12)`
+          ? `0 0 0 1px rgba(${c.glowColor},0.45), 0 20px 60px rgba(0,0,0,0.7), 0 0 45px rgba(${c.glowColor},0.2)`
           : '0 0 0 1px rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.4)',
         transition: 'box-shadow 0.45s ease, transform 0.45s ease',
       }}
@@ -124,7 +125,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         )}
 
         {/* ── Status badge ── */}
-        <div className={`absolute ${featured ? 'top-3.5 right-3.5' : 'top-3.5 right-3.5'} z-10
+        <div className={`absolute top-3.5 right-3.5 z-10
                          flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl
                          border text-[10px] font-bold uppercase tracking-wider
                          backdrop-blur-xl ${s.cls}`}>
@@ -134,30 +135,36 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
         {/* ── CTA hover overlay ── */}
         <div
-          className={`absolute inset-0 z-10 flex items-end pb-5 justify-center gap-3
-                       transition-opacity duration-350 ${hovered ? 'opacity-100' : 'opacity-0'}`}
-          style={{ backdropFilter: hovered ? 'blur(3px)' : 'none', background: hovered ? 'rgba(0,0,0,0.45)' : 'transparent' }}
+          className={`absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-4
+                       transition-all duration-300 ${hovered ? 'opacity-100 backdrop-blur-[4px] bg-black/60' : 'opacity-0 pointer-events-none'}`}
         >
-          {liveUrl && (
-            <a href={liveUrl} target="_blank" rel="noopener noreferrer"
-               onClick={e => e.stopPropagation()}
-               className={`flex items-center gap-2 px-5 py-2.5 rounded-full
-                           bg-gradient-to-r ${c.bar} text-white text-[12px] font-bold
-                           shadow-xl hover:scale-105 hover:brightness-110
-                           transition-all duration-200`}>
-              <ExternalLink className="h-3.5 w-3.5" /> Live Demo
-            </a>
-          )}
-          {githubUrl && (
-            <a href={githubUrl} target="_blank" rel="noopener noreferrer"
-               onClick={e => e.stopPropagation()}
-               className="flex items-center gap-2 px-5 py-2.5 rounded-full
-                          bg-white/10 border border-white/25 text-white text-[12px] font-semibold
-                          hover:bg-white/20 hover:scale-105 backdrop-blur-sm
-                          transition-all duration-200">
-              <Github className="h-3.5 w-3.5" /> Source
-            </a>
-          )}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <Sparkles className="w-3.5 h-3.5 animate-spin text-cyan-400" style={{ animationDuration: '6s' }} />
+            <span>Click to View Full Mission Details</span>
+          </div>
+
+          <div className="flex items-center gap-2 mt-1">
+            {liveUrl && (
+              <a href={liveUrl} target="_blank" rel="noopener noreferrer"
+                 onClick={e => e.stopPropagation()}
+                 className={`flex items-center gap-1.5 px-4 py-2 rounded-xl
+                             bg-gradient-to-r ${c.bar} text-white text-[11px] font-bold
+                             shadow-xl hover:scale-105 hover:brightness-110
+                             transition-all duration-200`}>
+                <ExternalLink className="h-3.5 w-3.5" /> Live Demo
+              </a>
+            )}
+            {githubUrl && (
+              <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+                 onClick={e => e.stopPropagation()}
+                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl
+                            bg-white/10 border border-white/25 text-white text-[11px] font-semibold
+                            hover:bg-white/20 hover:scale-105 backdrop-blur-sm
+                            transition-all duration-200">
+                <Github className="h-3.5 w-3.5" /> Source
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
@@ -178,7 +185,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         <h3
           id={`title-${project._id}`}
           className="text-[1.15rem] font-extrabold text-white leading-snug tracking-tight
-                     line-clamp-2 group-hover:text-white transition-colors duration-300"
+                     line-clamp-2 group-hover:text-cyan-300 transition-colors duration-300"
         >
           {title}
         </h3>
@@ -234,6 +241,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           <div className="flex items-center gap-1">
             {githubUrl && (
               <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+                 onClick={e => e.stopPropagation()}
                  className="p-2 rounded-xl text-blue-300/60 hover:text-cyan-400 hover:bg-cyan-400/10
                             transition-all duration-200"
                  aria-label={`GitHub – ${title}`}>
@@ -241,27 +249,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               </a>
             )}
 
-            {/* Primary CTA */}
-            {liveUrl ? (
-              <a href={liveUrl} target="_blank" rel="noopener noreferrer"
-                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl
-                             bg-gradient-to-r ${c.bar} text-white text-[12px] font-bold
-                             hover:opacity-90 hover:scale-105 transition-all duration-200`}
-                 style={{ boxShadow: `0 4px 16px rgba(${c.glowColor},0.35)` }}
-                 aria-label={`Visit ${title}`}>
-                View <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-            ) : githubUrl ? (
-              <a href={githubUrl} target="_blank" rel="noopener noreferrer"
-                 className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl
-                            text-blue-200/80 text-[12px] font-semibold
-                            border border-blue-400/20 bg-blue-400/[0.06]
-                            hover:text-white hover:bg-blue-400/15
-                            transition-all duration-200"
-                 aria-label={`Code – ${title}`}>
-                Code <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-            ) : null}
+            {/* View Details Primary Action */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCardClick();
+              }}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl
+                          bg-gradient-to-r ${c.bar} text-white text-[12px] font-bold
+                          hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-md`}
+              style={{ boxShadow: `0 4px 16px rgba(${c.glowColor},0.35)` }}
+            >
+              Details <ArrowUpRight className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </div>

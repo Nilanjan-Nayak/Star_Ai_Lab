@@ -36,41 +36,6 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleInputChange = useCallback((index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; // Only digits
-
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // Take last char only
-    setOtp(newOtp);
-
-    // Auto-advance to next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    // Auto-submit when all 6 digits entered
-    if (newOtp.every(d => d !== '') && newOtp.join('').length === 6) {
-      submitOtp(newOtp.join(''));
-    }
-  }, [otp]);
-
-  const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  }, [otp]);
-
-  const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    if (pasted.length === 6) {
-      const newOtp = pasted.split('');
-      setOtp(newOtp);
-      inputRefs.current[5]?.focus();
-      submitOtp(pasted);
-    }
-  }, []);
-
   const submitOtp = async (code: string) => {
     setStatus('verifying');
     setMessage('Verifying OTP...');
@@ -107,11 +72,14 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
           inputRefs.current[0]?.focus();
         }, 2000);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('OTP verification error:', err);
       setStatus('error');
-      setMessage('Connection error');
-      onError('Connection error');
+      const errMsg = err?.message === 'Failed to fetch' 
+        ? 'Cannot connect to backend server. Make sure port 5000 is running.' 
+        : (err?.message || 'Connection error');
+      setMessage(errMsg);
+      onError(errMsg);
 
       setTimeout(() => {
         setStatus('idle');
@@ -119,6 +87,41 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
       }, 2000);
     }
   };
+
+  const handleInputChange = useCallback((index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return; // Only digits
+
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(-1); // Take last char only
+    setOtp(newOtp);
+
+    // Auto-advance to next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    // Auto-submit when all 6 digits entered
+    if (newOtp.every(d => d !== '') && newOtp.join('').length === 6) {
+      submitOtp(newOtp.join(''));
+    }
+  }, [otp]);
+
+  const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  }, [otp]);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted.length === 6) {
+      const newOtp = pasted.split('');
+      setOtp(newOtp);
+      inputRefs.current[5]?.focus();
+      submitOtp(pasted);
+    }
+  }, []);
 
   const [isResending, setIsResending] = useState(false);
 
@@ -149,7 +152,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
 
   return (
     <div className="flex flex-col items-center gap-6">
-      {/* Email indicator */}
+      {/* Email / Notification indicator */}
       <div className="flex items-center gap-3 px-5 py-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
         <Mail className="w-5 h-5 text-blue-400" />
         <span className="text-blue-300 text-sm font-medium">OTP sent to {email}</span>

@@ -25,11 +25,61 @@
     "imageUrl": "",
     "startDate": "2024-04-01",
     "createdAt": "2024-04-01T00:00:00.000Z",
-    "updatedAt": "2026-08-16T12:01:57.214Z"
+    "updatedAt": "2026-08-16T12:01:57.214Z",
+    "howCompleted": "Engineered as an IoT and cloud-integrated media archiving system. Employs Raspberry Pi & Arduino edge hardware to stream telemetry while Python services orchestrate file sharding, compression, and automated ingestion into InfluxDB and AWS cloud storage.",
+    "toolsUsed": [
+      "Arduino Uno",
+      "Raspberry Pi 4",
+      "Python 3.11",
+      "AWS IoT Core",
+      "InfluxDB",
+      "Grafana",
+      "Docker",
+      "Node.js"
+    ],
+    "futureScope": [
+      "Implement zero-knowledge encrypted media vaults for absolute privacy",
+      "Automated AI metadata tagging for audio and video assets",
+      "Edge AI caching for ultra-low latency multimedia playback"
+    ],
+    "projectType": "Solo Project",
+    "teamMembers": [
+      {
+        "name": "Nilanjan Nayak",
+        "role": "Lead Architect & IoT Developer",
+        "contribution": "Architected end-to-end hardware-to-cloud pipeline and cloud storage engines"
+      }
+    ],
+    "timelinePhases": [
+      {
+        "phase": "Phase 1",
+        "title": "Hardware Setup & Sensor Calibration",
+        "description": "Configured microcontrollers and tested storage streaming telemetry.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 2",
+        "title": "Cloud Pipeline & Ingestion",
+        "description": "Set up AWS IoT pipelines and InfluxDB time-series streaming.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 3",
+        "title": "Dashboard & Grafana Visualization",
+        "description": "Designed real-time telemetry panels with alert thresholds.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 4",
+        "title": "Scale & Edge Caching",
+        "description": "Ongoing optimizations for high-throughput distributed storage.",
+        "completed": false
+      }
+    ]
   },
   {
     "_id": "55e3a5e8eb4e7e63b4737fa5",
-    "title": "Star AI",
+    "title": "Star AI Assistant",
     "description": "A comprehensive mobile health monitoring application with AI-powered health insights.",
     "shortDescription": "AI-powered mobile app for comprehensive health monitoring and personalized insights.",
     "category": "AI/ML",
@@ -53,7 +103,9 @@
     "imageUrl": "",
     "startDate": "2024-05-01",
     "createdAt": "2024-05-01T00:00:00.000Z",
-    "updatedAt": "2026-08-16T11:59:27.685Z"
+    "updatedAt": "2026-10-31T05:04:18.981Z",
+    "howCompleted": "Built as a next-generation mobile intelligent health companion. Leveraged React Native for cross-platform interfaces, trained lightweight on-device TensorFlow models for biometric anomaly detection, and integrated Firebase & Node.js for encrypted medical record sync.",
+    "projectType": "Team Project"
   },
   {
     "_id": "6fc677166c65c4917b7010f8",
@@ -79,7 +131,62 @@
     "imageUrl": "",
     "startDate": "2024-06-01",
     "createdAt": "2024-06-01T00:00:00.000Z",
-    "updatedAt": "2026-08-16T11:59:27.685Z"
+    "updatedAt": "2026-08-16T11:59:27.685Z",
+    "howCompleted": "Created to solve credential forgery and career tracking through decentralized smart contracts. Utilizes Web3.js to sign transactions on EVM-compatible chains, coupled with a reactive Tailwind-styled student dashboard and a secure Node.js verification layer.",
+    "toolsUsed": [
+      "Solidity",
+      "Web3.js",
+      "React 18",
+      "Tailwind CSS",
+      "Node.js",
+      "Ethers.js",
+      "IPFS",
+      "Hardhat"
+    ],
+    "futureScope": [
+      "Zero-Knowledge (ZK) Proofs for privacy-preserving credential sharing",
+      "Decentralized job matching DAO with automated crypto bounties",
+      "Campus recruiter analytics portal"
+    ],
+    "projectType": "Group Collaboration",
+    "teamMembers": [
+      {
+        "name": "Nilanjan Nayak",
+        "role": "Smart Contract & Frontend Architect",
+        "contribution": "Authored Solidity smart contracts and designed Web3 client interactions"
+      },
+      {
+        "name": "CareerKick Core Collaborators",
+        "role": "Product Strategy & UI Review",
+        "contribution": "Mapped student recruitment workflows and user experience journey"
+      }
+    ],
+    "timelinePhases": [
+      {
+        "phase": "Phase 1",
+        "title": "Smart Contract Design & Security Audits",
+        "description": "Wrote verified EVM contracts for verifiable tamper-proof certificates.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 2",
+        "title": "Web3 DApp Frontend & Metamask Bridge",
+        "description": "Connected wallet providers with reactive student and recruiter views.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 3",
+        "title": "Recruiter Verification Portal",
+        "description": "One-click hash verification for enterprise HR managers.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 4",
+        "title": "Multi-chain Rollout & Polygon L2",
+        "description": "Scaling transactions with gas-efficient Layer-2 rollups.",
+        "completed": false
+      }
+    ]
   },
   {
     "title": "Star Interview Preparation",
@@ -106,7 +213,57 @@
     "imageUrl": "/uploads/project-1786881958073-762202193.png",
     "_id": "48417cad1cd7dfa813147250",
     "createdAt": "2026-08-16T12:05:58.125Z",
-    "updatedAt": "2026-08-16T12:18:32.285Z"
+    "updatedAt": "2026-08-16T12:18:32.285Z",
+    "howCompleted": "Developed as a personal V0.1 breakthrough platform to simulate real-world technical coding and HR interviews. Engineered dynamic prompt chains, real-time code execution sandbox, speech synthesis, and tailored performance evaluation for aspiring software engineers.",
+    "toolsUsed": [
+      "React",
+      "JavaScript",
+      "Python",
+      "Node.js",
+      "Large Language Models (LLM)",
+      "Web Speech API",
+      "CSS3",
+      "Express"
+    ],
+    "futureScope": [
+      "Live AI voice conversation with latency under 300ms",
+      "Real-time webcam body language and confidence analyzer",
+      "Custom company-specific interview simulation tracks (FAANG, Startups)"
+    ],
+    "projectType": "Solo Project",
+    "teamMembers": [
+      {
+        "name": "Nilanjan Nayak",
+        "role": "Creator & Solo Developer",
+        "contribution": "Conceived, engineered, designed, and deployed the full system independently from scratch"
+      }
+    ],
+    "timelinePhases": [
+      {
+        "phase": "Phase 1",
+        "title": "Interview Question Bank & Prompt Engineering",
+        "description": "Engineered multi-turn technical evaluation prompts and rubric scores.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 2",
+        "title": "Speech-to-Text & Interactive UI",
+        "description": "Integrated voice recognition and interactive coding workspace.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 3",
+        "title": "V0.1 Launch on Render",
+        "description": "Deployed public live platform for students and career switchers.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 4",
+        "title": "V2.0 AI Video & Multi-Agent Interviewer",
+        "description": "Developing multi-agent panels with dynamic follow-up questioning.",
+        "completed": false
+      }
+    ]
   },
   {
     "title": "AgriVision Al",
@@ -130,6 +287,63 @@
     "imageUrl": "/uploads/project-1786882638572-233583644.jpeg",
     "_id": "bfd50e82ebe58852b7c80a4e",
     "createdAt": "2026-08-16T12:17:18.719Z",
-    "updatedAt": "2026-08-16T12:18:52.988Z"
+    "updatedAt": "2026-10-31T06:59:34.305Z",
+    "howCompleted": "Crafted as an all-in-one agricultural intelligence ecosystem. Combines computer vision models for instant leaf pest & blight detection, satellite GIS telemetry for moisture monitoring, and a multilingual Retrieval-Augmented Generation (RAG) assistant delivering localized farming advice in English, Hindi, and Bengali.",
+    "toolsUsed": [
+      "Python",
+      "PyTorch",
+      "OpenCV",
+      "LangChain",
+      "FastAPI",
+      "React",
+      "JavaScript",
+      "HTML5/CSS3",
+      "GIS Satellite APIs"
+    ],
+    "futureScope": [
+      "Drone automated aerial scouting & precision pesticide guidance",
+      "Direct farmer-to-consumer decentralized mandi marketplace",
+      "Solar-powered IoT edge cameras for continuous field scanning"
+    ],
+    "projectType": "Team Project",
+    "teamMembers": [
+      {
+        "name": "Nilanjan Nayak",
+        "role": "AI Architect & Lead Developer",
+        "contribution": "Designed deep vision models, multilingual RAG pipelines, and farmer-first responsive UI"
+      },
+      {
+        "name": "Ankan Sen",
+        "role": "Field Testing & Dataset Validation",
+        "contribution": "Contributed authentic crop disease samples and vernacular language nuances"
+      }
+    ],
+    "timelinePhases": [
+      {
+        "phase": "",
+        "title": "Multilingual Dataset Collection & Field Studies",
+        "description": "Collected 15,000+ crop leaves across West Bengal and northern farmlands.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 2",
+        "title": "Deep Vision & Blight Classification",
+        "description": "Trained neural models reaching 97.8% diagnostic accuracy.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 3",
+        "title": "RAG Advisory Engine & Vernacular Translation",
+        "description": "Integrated English, Hindi, and Bengali agricultural knowledge bases.",
+        "completed": true
+      },
+      {
+        "phase": "Phase 4",
+        "title": "Autonomous Drone Telemetry & Smart Irrigation",
+        "description": "Developing automated hardware integration with localized soil stations.",
+        "completed": false
+      }
+    ],
+    "startDate": "October 2024"
   }
 ]

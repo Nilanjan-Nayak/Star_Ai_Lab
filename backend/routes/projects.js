@@ -8,6 +8,16 @@ const adminAuth = require('../middleware/adminAuth');
 
 const router = express.Router();
 
+const parseJsonField = (val, fallback = undefined) => {
+  if (!val) return fallback;
+  if (typeof val !== 'string') return val;
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return fallback;
+  }
+};
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -108,8 +118,12 @@ router.post('/', adminAuth, upload.single('image'), projectValidation, async (re
 
     const projectData = {
       ...req.body,
-      technologies: JSON.parse(req.body.technologies || '[]'),
-      tags: JSON.parse(req.body.tags || '[]'),
+      technologies: parseJsonField(req.body.technologies, []),
+      tags: parseJsonField(req.body.tags, []),
+      toolsUsed: parseJsonField(req.body.toolsUsed, undefined),
+      futureScope: parseJsonField(req.body.futureScope, undefined),
+      teamMembers: parseJsonField(req.body.teamMembers, undefined),
+      timelinePhases: parseJsonField(req.body.timelinePhases, undefined),
       featured: req.body.featured === 'true' || req.body.featured === true
     };
 
@@ -136,8 +150,12 @@ router.put('/:id', adminAuth, upload.single('image'), projectValidation, async (
 
     const updateData = {
       ...req.body,
-      technologies: JSON.parse(req.body.technologies || '[]'),
-      tags: JSON.parse(req.body.tags || '[]'),
+      technologies: parseJsonField(req.body.technologies, []),
+      tags: parseJsonField(req.body.tags, []),
+      toolsUsed: parseJsonField(req.body.toolsUsed, undefined),
+      futureScope: parseJsonField(req.body.futureScope, undefined),
+      teamMembers: parseJsonField(req.body.teamMembers, undefined),
+      timelinePhases: parseJsonField(req.body.timelinePhases, undefined),
       featured: req.body.featured === 'true' || req.body.featured === true
     };
 

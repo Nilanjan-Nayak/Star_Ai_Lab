@@ -1,4 +1,18 @@
 // Shared Project interface for the application
+export interface ProjectTeamMember {
+  name: string;
+  role: string;
+  avatar?: string;
+  contribution?: string;
+}
+
+export interface ProjectTimelinePhase {
+  phase: string;
+  title: string;
+  description: string;
+  completed?: boolean;
+}
+
 export interface Project {
   _id: string;
   title: string;
@@ -12,8 +26,18 @@ export interface Project {
   liveUrl?: string;
   featured: boolean;
   startDate: string;
+  endDate?: string;
   tags: string[];
   createdAt: string;
+  updatedAt?: string;
+
+  // Detailed presentation attributes
+  howCompleted?: string;
+  toolsUsed?: string[];
+  futureScope?: string[];
+  teamMembers?: ProjectTeamMember[];
+  projectType?: 'Solo Project' | 'Team Project' | 'Group Collaboration';
+  timelinePhases?: ProjectTimelinePhase[];
 }
 
 // Project context interface

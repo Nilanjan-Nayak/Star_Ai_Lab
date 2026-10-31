@@ -78,41 +78,49 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ isVisible, onClose, onAuthentic
                 <ShieldCheck className="w-8 h-8 text-cyan-400" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                {step === 'face' && 'Admin Verification'}
-                {step === 'otp' && 'Enter OTP Code'}
-                {step === 'authenticated' && 'Access Granted'}
+                Admin Verification
               </h2>
               <p className="text-blue-300/60 text-sm">
-                {step === 'face' && 'Verify your identity to access the admin panel'}
-                {step === 'otp' && 'Enter the 6-digit code sent to your email'}
-                {step === 'authenticated' && 'Redirecting to admin dashboard...'}
+                Verify your identity to access the admin panel
               </p>
             </div>
 
-            {/* Step indicators */}
+            {/* Step indicator */}
             <div className="flex items-center justify-center gap-3 mb-8">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                step === 'face' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
-                'bg-green-500/10 text-green-400 border border-green-500/20'
-              }`}>
-                <Fingerprint className="w-4 h-4" />
+              <div
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                  step === 'face'
+                    ? 'bg-blue-500/20 text-cyan-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                    : 'bg-white/5 text-white/30 border border-white/5'
+                }`}
+              >
+                <Fingerprint className="w-3.5 h-3.5" />
                 Face
               </div>
-              <div className={`w-8 h-[2px] ${step !== 'face' ? 'bg-cyan-400/40' : 'bg-white/10'}`} />
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                step === 'otp' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
-                step === 'authenticated' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                'bg-white/5 text-white/30 border border-white/5'
-              }`}>
-                <KeyRound className="w-4 h-4" />
+
+              <div className="w-8 h-[1px] bg-white/10" />
+
+              <div
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                  step === 'otp'
+                    ? 'bg-blue-500/20 text-cyan-300 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                    : 'bg-white/5 text-white/30 border border-white/5'
+                }`}
+              >
+                <KeyRound className="w-3.5 h-3.5" />
                 OTP
               </div>
-              <div className={`w-8 h-[2px] ${step === 'authenticated' ? 'bg-cyan-400/40' : 'bg-white/10'}`} />
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                step === 'authenticated' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                'bg-white/5 text-white/30 border border-white/5'
-              }`}>
-                <Sparkles className="w-4 h-4" />
+
+              <div className="w-8 h-[1px] bg-white/10" />
+
+              <div
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                  step === 'authenticated'
+                    ? 'bg-green-500/20 text-green-300 border border-green-400/30 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                    : 'bg-white/5 text-white/30 border border-white/5'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
                 Access
               </div>
             </div>

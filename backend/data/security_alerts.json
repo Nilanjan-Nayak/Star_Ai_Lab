@@ -1,0 +1,20 @@
+{
+  "totalThreats": 1,
+  "alerts": [
+    {
+      "id": "threat_1793426909726_8gklw",
+      "ip": "127.0.0.1 (Localhost)",
+      "maskedIp": "Localhost / Dev",
+      "threatType": "SQL Injection (SQLi) Attempt",
+      "severity": "CRITICAL",
+      "url": "/api/projects?search=%27%20OR%20%271%27=%271",
+      "method": "GET",
+      "payload": "Query: {\"search\":\"' OR '1'='1\"}",
+      "userAgent": "node",
+      "referrer": "https://attacker-origin.com",
+      "location": "Local Machine / Dev Studio",
+      "timestamp": "2026-10-31T06:08:29.726Z",
+      "emailSent": true
+    }
+  ]
+}

@@ -165,7 +165,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
 
       if (response.ok) {
         setStatus('success');
-        setMessage('✅ Trained dataset face matched! OTP sent to your email.');
+        setMessage(data.message || '✅ Face verified! OTP sent to your registered email.');
 
         if (stream) stream.getTracks().forEach(track => track.stop());
         onSuccess(data.email, false);
@@ -177,7 +177,9 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
     } catch (err: any) {
       console.error('Verification error:', err);
       setStatus('error');
-      const errMsg = err?.message || 'Error processing face verification';
+      const errMsg = err?.message === 'Failed to fetch'
+        ? 'Backend server not responding. Please make sure backend is running on port 5000.'
+        : (err?.message || 'Error processing face verification');
       setMessage(errMsg);
       onError(errMsg);
     }

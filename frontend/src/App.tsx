@@ -1,6 +1,6 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -17,7 +17,7 @@ import { useVisitorTracking } from './hooks/useVisitorTracking';
 import { useSecretAccess } from './hooks/useSecretAccess';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminPanel from './components/admin/AdminPanel';
-import Demo_card from './components/Demo_card'
+import Demo_card from './components/Demo_card';
 
 
 function App() {
@@ -50,6 +50,19 @@ function AppContent() {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminToken, setAdminToken] = useState('');
   const [adminUser, setAdminUser] = useState<any>(null);
+
+  // Passive background security & visitor heartbeat (completely invisible to regular users)
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/visitors/ping`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: window.location.pathname,
+        referrer: document.referrer || 'Direct',
+        userAgent: navigator.userAgent
+      })
+    }).catch(() => {});
+  }, []);
 
   // Check for existing admin session
   useState(() => {
