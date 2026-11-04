@@ -171,7 +171,7 @@ export const ProjectCover: React.FC<{ project: Project; className?: string; imgC
                 <>
                     <img
                         src={src}
-                        alt=""
+                        alt={project.title ? `${project.title} — Star AI Lab Project` : 'Star AI Lab AI Project Preview'}
                         loading="lazy"
                         onError={() => setFailed(true)}
                         className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}

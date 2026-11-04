@@ -19,6 +19,7 @@ const adminAuthRoutes = require('./routes/adminAuth');
 const contentRoutes = require('./routes/content');
 const contactRoutes = require('./routes/contact');
 const visitorRoutes = require('./routes/visitors');
+const teamRoutes = require('./routes/team');
 const securityShield = require('./middleware/securityShield');
 
 const app = express();
@@ -90,6 +91,7 @@ app.use('/api/admin-auth', adminAuthRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/visitors', visitorRoutes);
+app.use('/api/team', teamRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

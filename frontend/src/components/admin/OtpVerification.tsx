@@ -5,16 +5,19 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 interface OtpVerificationProps {
   email: string;
+  pendingToken?: string;
   onSuccess: (token: string, user: any) => void;
   onError: (message: string) => void;
 }
 
-const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onError }) => {
+const OtpVerification: React.FC<OtpVerificationProps> = ({ email, pendingToken, onSuccess, onError }) => {
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [countdown, setCountdown] = useState(300); // 5 min countdown
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const failures = useRef(0);
+  const [lockedUntil, setLockedUntil] = useState(0);
 
   // Focus first input on mount
   useEffect(() => {
@@ -37,6 +40,11 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
   };
 
   const submitOtp = async (code: string) => {
+    if (Date.now() < lockedUntil) {
+      setStatus('error');
+      setMessage(`Too many wrong codes. Try again in ${Math.ceil((lockedUntil - Date.now()) / 1000)}s.`);
+      return;
+    }
     setStatus('verifying');
     setMessage('Verifying OTP...');
 
@@ -44,7 +52,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
       const response = await fetch(`${API_BASE}/api/admin-auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ otp: code })
+        body: JSON.stringify(pendingToken ? { otp: code, pendingToken } : { otp: code })
       });
 
       const data = await response.json();
@@ -53,9 +61,6 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
         setStatus('success');
         setMessage('✅ Authentication successful!');
 
-        // Store token
-        localStorage.setItem('adminToken', data.token);
-
         setTimeout(() => {
           onSuccess(data.token, data.user);
         }, 800);
@@ -63,6 +68,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
         setStatus('error');
         setMessage(data.message || 'Invalid OTP');
         onError(data.message);
+        failures.current += 1;
+        if (failures.current >= 5) { failures.current = 0; setLockedUntil(Date.now() + 60_000); }
 
         // Reset for retry
         setTimeout(() => {
@@ -75,8 +82,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
     } catch (err: any) {
       console.error('OTP verification error:', err);
       setStatus('error');
-      const errMsg = err?.message === 'Failed to fetch' 
-        ? 'Cannot connect to backend server. Make sure port 5000 is running.' 
+      const errMsg = err?.message === 'Failed to fetch'
+        ? 'Cannot connect to backend server. Make sure port 5000 is running.'
         : (err?.message || 'Connection error');
       setMessage(errMsg);
       onError(errMsg);
@@ -121,7 +128,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
       inputRefs.current[5]?.focus();
       submitOtp(pasted);
     }
-  }, []);
+  }, [pendingToken, lockedUntil]);
 
   const [isResending, setIsResending] = useState(false);
 
@@ -159,23 +166,24 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
       </div>
 
       {/* OTP Input */}
-      <div className="flex gap-3" onPaste={handlePaste}>
+      <div className="flex gap-2 sm:gap-3" onPaste={handlePaste}>
         {otp.map((digit, i) => (
           <input
             key={i}
             ref={el => { inputRefs.current[i] = el; }}
             type="text"
             inputMode="numeric"
+            autoComplete="one-time-code"
+            aria-label={`Digit ${i + 1} of 6`}
             maxLength={1}
             value={digit}
             onChange={e => handleInputChange(i, e.target.value)}
             onKeyDown={e => handleKeyDown(i, e)}
-            className={`w-14 h-16 text-center text-2xl font-bold rounded-xl border-2 bg-white/5 backdrop-blur-sm outline-none transition-all duration-300 ${
-              status === 'success' ? 'border-green-500/50 text-green-400' :
-              status === 'error' ? 'border-red-500/50 text-red-400 animate-shake' :
-              digit ? 'border-cyan-400/50 text-white' :
-              'border-white/10 text-white/50'
-            } focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(34,211,238,0.2)]`}
+            className={`w-11 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-xl border-2 bg-white/5 backdrop-blur-sm outline-none transition-all duration-300 ${status === 'success' ? 'border-green-500/50 text-green-400' :
+                status === 'error' ? 'border-red-500/50 text-red-400 animate-shake' :
+                  digit ? 'border-cyan-400/50 text-white' :
+                    'border-white/10 text-white/50'
+              } focus:border-cyan-400 focus:shadow-[0_0_20px_rgba(34,211,238,0.2)]`}
             disabled={status === 'verifying' || status === 'success'}
           />
         ))}
@@ -183,12 +191,11 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ email, onSuccess, onE
 
       {/* Status */}
       {message && (
-        <div className={`flex items-center gap-2 text-sm font-medium ${
-          status === 'success' ? 'text-green-400' :
-          status === 'error' ? 'text-red-400' :
-          status === 'verifying' ? 'text-yellow-400' :
-          'text-blue-300/80'
-        }`}>
+        <div className={`flex items-center gap-2 text-sm font-medium ${status === 'success' ? 'text-green-400' :
+            status === 'error' ? 'text-red-400' :
+              status === 'verifying' ? 'text-yellow-400' :
+                'text-blue-300/80'
+          }`}>
           {status === 'verifying' && <Loader2 className="w-4 h-4 animate-spin" />}
           {status === 'success' && <CheckCircle className="w-4 h-4" />}
           {status === 'error' && <AlertCircle className="w-4 h-4" />}

@@ -114,6 +114,7 @@ const startCosmos = () => {
     const galaxy = buildGalaxyLite();
     const COLORS = ['255,255,255', '190,215,255', '160,200,255', '255,232,205'];
     let w = 0, h = 0, dpr = 1, raf = 0, t = 0, sy = 0, nextShoot = 5;
+    let lastSy = window.scrollY, vel = 0; // smoothed scroll speed (px per frame)
     let last = performance.now();
     let stars: { x: number; y: number; z: number; r: number; a: number; tw: number; ph: number; c: string }[] = [];
     const shooter = { on: false, x: 0, y: 0, life: 0 };
@@ -171,15 +172,29 @@ const startCosmos = () => {
         ctx.drawImage(galaxy, -galaxy.width / 2, -galaxy.height / 2);
         ctx.restore();
 
-        // parallax stars (deeper stars scroll slower)
+        // parallax stars (deeper stars scroll slower) – they stretch into streaks when you scroll fast
+        vel += ((reduce ? 0 : sy - lastSy) - vel) * 0.2;
+        lastSy = sy;
+        const streak = Math.min(70, Math.abs(vel) * 1.1);
+        const dir = vel >= 0 ? 1 : -1;
         ctx.globalCompositeOperation = 'source-over';
+        ctx.lineCap = 'round';
         for (const st of stars) {
             const y = (((st.y - sy * 0.35 * st.z) % h) + h) % h;
             const a = st.a * (0.55 + 0.45 * Math.sin(t * st.tw + st.ph));
-            ctx.fillStyle = `rgba(${st.c},${a})`;
-            ctx.beginPath();
-            ctx.arc(st.x, y, st.r, 0, 6.283);
-            ctx.fill();
+            if (streak > 3) {
+                ctx.strokeStyle = `rgba(${st.c},${Math.min(1, a * 0.9)})`;
+                ctx.lineWidth = Math.max(0.6, st.r * 1.1);
+                ctx.beginPath();
+                ctx.moveTo(st.x, y);
+                ctx.lineTo(st.x, y + dir * streak * st.z);
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = `rgba(${st.c},${a})`;
+                ctx.beginPath();
+                ctx.arc(st.x, y, st.r, 0, 6.283);
+                ctx.fill();
+            }
         }
 
         // an occasional shooting star
@@ -245,7 +260,7 @@ export const SectionShell = ({
 }: { children: ReactNode; tone?: Tone; bare?: boolean } & HTMLAttributes<HTMLElement>) => {
     useCosmos();
     return (
-        <section id={id} className={`relative overflow-hidden py-24 sm:py-28 scroll-mt-24 ${className}`} {...rest}>
+        <section id={id} className={`relative overflow-hidden py-24 sm:py-28 ${className}`} {...rest}>
             <div className="pointer-events-none absolute inset-0" aria-hidden="true">
                 {/* soft scrim for legibility – fades to nothing at both edges, so sections melt into each other */}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(2,4,10,0) 0%, rgba(2,4,10,.5) 20%, rgba(2,4,10,.5) 80%, rgba(2,4,10,0) 100%)' }} />

@@ -4,7 +4,7 @@ import { Camera, AlertCircle, CheckCircle, Loader2, RefreshCw } from 'lucide-rea
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 interface FaceVerificationProps {
-  onSuccess: (email: string, firstTimeSetup?: boolean) => void;
+  onSuccess: (email: string, firstTimeSetup?: boolean, pendingToken?: string) => void;
   onError: (message: string) => void;
 }
 
@@ -15,6 +15,8 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
   const [status, setStatus] = useState<'loading' | 'ready' | 'scanning' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Initializing camera...');
   const [faceApiLoaded, setFaceApiLoaded] = useState(false);
+  const attempts = useRef(0);
+  const [lockedUntil, setLockedUntil] = useState(0);
 
   // Load face-api.js from CDN
   useEffect(() => {
@@ -74,13 +76,13 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
           height: { ideal: 480 }
         }
       });
-      
+
       setStream(mediaStream);
 
       if (videoRef.current) {
         const video = videoRef.current;
         video.srcObject = mediaStream;
-        
+
         video.onloadedmetadata = async () => {
           try {
             await video.play();
@@ -108,12 +110,19 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      (videoRef.current?.srcObject as MediaStream | null)?.getTracks().forEach(t => t.stop());
     };
   }, [faceApiLoaded]);
 
   // Face Verification handler
   const handleVerify = useCallback(async () => {
     if (!videoRef.current || !faceApiLoaded) return;
+    if (Date.now() < lockedUntil) {
+      setMessage(`Too many attempts. Try again in ${Math.ceil((lockedUntil - Date.now()) / 1000)}s.`);
+      return;
+    }
+    attempts.current += 1;
+    if (attempts.current >= 5) { attempts.current = 0; setLockedUntil(Date.now() + 60_000); }
 
     setStatus('scanning');
     setMessage('Scanning face landmarks against your trained dataset...');
@@ -168,7 +177,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
         setMessage(data.message || '✅ Face verified! OTP sent to your registered email.');
 
         if (stream) stream.getTracks().forEach(track => track.stop());
-        onSuccess(data.email, false);
+        onSuccess(data.email, false, data.pendingToken);
       } else {
         setStatus('error');
         setMessage(data.message || 'Face verification failed');
@@ -183,18 +192,18 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
       setMessage(errMsg);
       onError(errMsg);
     }
-  }, [faceApiLoaded, stream, onSuccess, onError]);
+  }, [faceApiLoaded, stream, onSuccess, onError, lockedUntil]);
 
   return (
     <div className="flex flex-col items-center gap-6">
       {/* Camera Feed Container */}
-      <div className="relative w-[420px] h-[315px] rounded-2xl overflow-hidden border-2 border-blue-500/30 bg-black/90 shadow-2xl">
+      <div className="relative aspect-[4/3] w-full max-w-[420px] rounded-2xl overflow-hidden border-2 border-blue-500/30 bg-black/90 shadow-2xl">
         <video
           ref={videoRef}
           autoPlay
           muted
           playsInline
-          onCanPlay={(e) => e.currentTarget.play().catch(() => {})}
+          onCanPlay={(e) => e.currentTarget.play().catch(() => { })}
           className="w-full h-full object-cover"
           style={{ transform: 'scaleX(-1)' }}
         />
@@ -206,12 +215,11 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
 
         {/* Face Oval Frame Guide */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className={`w-52 h-64 border-2 rounded-[50%] transition-all duration-500 ${
-            status === 'scanning' ? 'border-yellow-400/80 animate-pulse' :
-            status === 'success' ? 'border-green-400/90' :
-            status === 'error' ? 'border-red-400/90' :
-            'border-cyan-400/40'
-          }`} />
+          <div className={`w-52 h-64 border-2 rounded-[50%] transition-all duration-500 ${status === 'scanning' ? 'border-yellow-400/80 animate-pulse' :
+              status === 'success' ? 'border-green-400/90' :
+                status === 'error' ? 'border-red-400/90' :
+                  'border-cyan-400/40'
+            }`} />
         </div>
 
         {/* Loading overlay */}
@@ -223,12 +231,11 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({ onSuccess, onError 
       </div>
 
       {/* Message bar */}
-      <div className={`flex items-center gap-2 text-sm font-medium text-center px-4 ${
-        status === 'success' ? 'text-green-400' :
-        status === 'error' ? 'text-red-400' :
-        status === 'scanning' ? 'text-yellow-400' :
-        'text-blue-300/90'
-      }`}>
+      <div className={`flex items-center gap-2 text-sm font-medium text-center px-4 ${status === 'success' ? 'text-green-400' :
+          status === 'error' ? 'text-red-400' :
+            status === 'scanning' ? 'text-yellow-400' :
+              'text-blue-300/90'
+        }`}>
         {status === 'scanning' && <Loader2 className="w-4 h-4 animate-spin" />}
         {status === 'success' && <CheckCircle className="w-4 h-4" />}
         {status === 'error' && <AlertCircle className="w-4 h-4" />}

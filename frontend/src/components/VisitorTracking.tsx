@@ -128,7 +128,7 @@ const VisitorTracking: React.FC<VisitorTrackingProps> = ({ isOpen, onClose, onSu
             {/* Header */}
             <div className="text-center mb-6">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg">
-                <img src="../img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png" alt="" />
+                <img src="../img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png" alt="Star AI Lab Logo" />
               </div>
               
               <h2 className="text-2xl font-bold text-white mb-2">

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Clock, Sparkles } from 'lucide-react';
 import cornerLogoImg from '../img/_Pngtree_n_circle_letter_initial_logo_4835121-removebg-preview.png';
+import StarAiTeamModal from './StarAiTeamModal.tsx';
 
 const ComingSoon = () => {
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -199,17 +201,19 @@ const ComingSoon = () => {
           
         </div>
 
-        {/* Corner Logo */}
-        <div
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 bg-black/95 backdrop-blur-xl rounded-full px-5 py-2 pl-2 border-2 border-blue-500/30 shadow-2xl shadow-blue-500/20 transition-all duration-300 cursor-pointer hover:shadow-blue-400/30 hover:border-blue-400/50 group"
-          title="Made by Star AI Lab"
+        {/* Corner Logo / Team Showcase Trigger */}
+        <button
+          onClick={() => setIsTeamModalOpen(true)}
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 bg-black/95 backdrop-blur-xl rounded-full px-5 py-2 pl-2 border-2 border-blue-500/30 shadow-2xl shadow-blue-500/20 transition-all duration-300 cursor-pointer hover:shadow-cyan-400/30 hover:border-cyan-400/60 hover:-translate-y-0.5 active:translate-y-0 group"
+          title="Made by Star AI Lab — Click to view Founder & Team"
+          aria-label="Made by Star AI Lab — Click to view Founder & Team"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-yellow-400/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-cyan-400/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
           <img
             src={cornerLogoImg}
             alt="Star AI Lab Logo"
-            className="relative w-10 h-10 rounded-full border-2 border-blue-500/40 object-cover bg-white/10"
+            className="relative w-10 h-10 rounded-full border-2 border-blue-500/40 object-cover bg-white/10 group-hover:border-cyan-400/70 transition-colors duration-300"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
@@ -220,7 +224,13 @@ const ComingSoon = () => {
           <span className="relative text-cyan-300 text-sm font-semibold transition-colors duration-300 group-hover:text-cyan-200">
             Made by Star AI Lab
           </span>
-        </div>
+        </button>
+
+        {/* Interactive Star AI Lab Team & Hackathon Squad Modal */}
+        <StarAiTeamModal
+          isOpen={isTeamModalOpen}
+          onClose={() => setIsTeamModalOpen(false)}
+        />
       </section>
     </>
   );
